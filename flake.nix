@@ -29,6 +29,7 @@
           inherit rustPlatform;
         };
         firecracker-containerd = pkgs.callPackage ./nix/firecracker-containerd.nix {};
+        firecracker-ctr = pkgs.callPackage ./nix/firecracker-ctr.nix {};
       };
     });
 }
