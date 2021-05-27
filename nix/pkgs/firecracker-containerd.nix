@@ -5,8 +5,10 @@ buildGoModule rec {
   src = fetchFromGitHub {
     owner = "ease-lab";
     repo = "firecracker-containerd";
-    rev = "v${version}_user_page_faults";
-    sha256 = "sha256-54x2h+/Br8mJqVe8o2WJais28h8Bc5kI6ltKRW+75nY=";
+    # this is the actual branch, but no tags: "v${version}_user_page_faults"
+    rev = "aabd117cc2ec9c24a64c0cb5143d353e80d45f74";
+    sha256 = "sha256-cncQPPtGv1cu0G+EwaAI0v4PGuaKF39W3E1Tie1uxfc=";
+    fetchSubmodules = true;
   };
   subPackages = [
     "firecracker-control/cmd/containerd"
@@ -16,7 +18,12 @@ buildGoModule rec {
 
   # we want to this to be statically linked since it runs within the VM.
   postBuild = ''
+    set -x
     CGO_ENABLED=0 buildGoDir install ./agent
+    pushd ./_submodules/runc
+    CGO_ENABLED=0 buildGoDir install ./.
+    popd
+    set +x
   '';
 
   preBuild = ''
