@@ -5,9 +5,9 @@ buildGoModule rec {
   src = fetchFromGitHub {
     owner = "ease-lab";
     repo = "firecracker-containerd";
-    # this is the actual branch, but no tags: "v${version}_user_page_faults"
-    rev = "aabd117cc2ec9c24a64c0cb5143d353e80d45f74";
-    sha256 = "sha256-cncQPPtGv1cu0G+EwaAI0v4PGuaKF39W3E1Tie1uxfc=";
+    # this branch seems not to work: https://github.com/ease-lab/firecracker-containerd/commits/v0.24_user_page_faults
+    rev = "10cc33c3c603d9ac8025fd243826cb3b1edbdead";
+    sha256 = "sha256-HSA4TmeD+sUpy5S+wOXyUzTARSJCHQEjzRDlRiryUyk=";
     fetchSubmodules = true;
   };
   subPackages = [
@@ -20,9 +20,6 @@ buildGoModule rec {
   postBuild = ''
     set -x
     CGO_ENABLED=0 buildGoDir install ./agent
-    pushd ./_submodules/runc
-    CGO_ENABLED=0 buildGoDir install ./.
-    popd
     set +x
   '';
 
@@ -32,11 +29,10 @@ buildGoModule rec {
     )
   '';
 
-
   postInstall = ''
     mv $out/bin/{runtime,containerd-shim-aws-firecracker}
   '';
 
   doCheck = false; # does not work in sandbox
-  vendorSha256 = "sha256-5jUxz8AwAX09x9HGNTMZ8Gt9OEo+4rZgo5Uk3fdZ2BY=";
+  vendorSha256 = "sha256-wtVfLkKLy7mkUltRWuIoOzALE3zl8CND820GUF5FGvQ=";
 }
