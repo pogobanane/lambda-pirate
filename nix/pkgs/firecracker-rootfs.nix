@@ -76,6 +76,6 @@ let
     '';
   };
 in
-runCommand "default-rootfs.img" { } ''
+runCommand "rootfs.img" { } ''
   ${qemu_kvm}/bin/qemu-img convert ${qcow}/disk-image.qcow2 $out
 ''

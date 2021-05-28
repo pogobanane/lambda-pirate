@@ -36,7 +36,7 @@
             };
             firecracker-containerd = pkgs.callPackage ./nix/pkgs/firecracker-containerd.nix { };
             firecracker-ctr = pkgs.callPackage ./nix/pkgs/firecracker-ctr.nix { };
-            firecracker-default-rootfs = pkgs.callPackage ./nix/pkgs/firecracker-default-rootfs.nix {
+            firecracker-rootfs = pkgs.callPackage ./nix/pkgs/firecracker-rootfs.nix {
               inherit firecracker-containerd;
             };
           };
@@ -51,7 +51,7 @@
               inherit (firecrackerPackages)
                 firecracker-kernel
                 firecracker-containerd
-                firecracker-default-rootfs
+                firecracker-rootfs
                 firecracker-ctr;
             };
         };

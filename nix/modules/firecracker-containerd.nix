@@ -73,7 +73,7 @@ in
       firecracker_binary_path = "${pkgs.firecracker}/bin/firecracker";
       kernel_image_path = "${pkgs.firecracker-kernel}/vmlinux";
       kernel_args = "console=ttyS0 noapic reboot=k panic=1 pci=off nomodules ro systemd.journald.forward_to_console systemd.unit=firecracker.target init=/sbin/overlay-init";
-      root_drive = pkgs.firecracker-default-rootfs;
+      root_drive = pkgs.firecracker-rootfs;
       cpu_template = "T2";
       log_levels = [ "info" ];
     };
