@@ -71,14 +71,8 @@ let
       ln -s /lib/systemd/systemd /mnt/usr/sbin/init
       ln -sf dash /mnt/bin/sh
 
-      # squashfs does not like this
-      ${util-linux}/bin/umount /mnt/proc
-
       # now we create the actual filesystem
-      ${squashfsTools}/bin/mksquashfs /mnt /dev/vda -noappend
-
-      # buildCommand wants to unmount this
-      ${util-linux}/bin/mount --bind /proc /mnt/proc
+      ${squashfsTools}/bin/mksquashfs /mnt /dev/vda -noappend -e /mnt/proc -e /mnt/inst
     '';
   };
 in
