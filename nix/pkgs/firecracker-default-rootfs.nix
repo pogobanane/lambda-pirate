@@ -67,6 +67,8 @@ let
       for d in $dirs; do
         mkdir -p /mnt/$d
       done
+      # overlay-init wants this
+      ln -s /lib/systemd/systemd /mnt/usr/sbin/init
       ln -sf dash /mnt/bin/sh
 
       # squashfs does not like this
