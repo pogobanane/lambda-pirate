@@ -57,6 +57,22 @@
                 firecracker-ctr;
             };
         };
+        k3s = { ... }: {
+          imports = [
+            self.nixosModules.firecracker-containerd
+            ./nix/modules/k3s.nix
+          ];
+        };
+        vhive = { ... }: {
+          imports = [
+            ({...}: {
+              nixpkgs.config.packageOverrides = pkgs: {
+                inherit (self.packages.${pkgs.system}) vhive;
+              };
+            })
+            ./nix/modules/vhive.nix
+          ];
+        };
         firecracker-containerd = { ... }: {
           imports = [
             self.nixosModules.firecracker-pkgs
