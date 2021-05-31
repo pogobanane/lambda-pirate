@@ -28,7 +28,6 @@
         in
         {
           packages = rec {
-            runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix {};
             firecracker = pkgs.callPackage ./nix/pkgs/firecracker.nix {
               inherit rustPlatform;
             };
@@ -38,8 +37,10 @@
             firecracker-containerd = pkgs.callPackage ./nix/pkgs/firecracker-containerd.nix { };
             firecracker-ctr = pkgs.callPackage ./nix/pkgs/firecracker-ctr.nix { };
             firecracker-rootfs = pkgs.callPackage ./nix/pkgs/firecracker-rootfs {
-              inherit firecracker-containerd static-runc;
+              inherit firecracker-containerd runc-static;
             };
+            runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix {};
+            vhive = pkgs.callPackage ./nix/pkgs/vhive.nix {};
           };
         }) // {
       nixosModules = {
@@ -55,6 +56,22 @@
                 firecracker-rootfs
                 firecracker-ctr;
             };
+        };
+        k3s = { ... }: {
+          imports = [
+            self.nixosModules.firecracker-containerd
+            ./nix/modules/k3s.nix
+          ];
+        };
+        vhive = { ... }: {
+          imports = [
+            ({...}: {
+              nixpkgs.config.packageOverrides = pkgs: {
+                inherit (self.packages.${pkgs.system}) vhive;
+              };
+            })
+            ./nix/modules/vhive.nix
+          ];
         };
         firecracker-containerd = { ... }: {
           imports = [
