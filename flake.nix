@@ -28,6 +28,7 @@
         in
         {
           packages = rec {
+            runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix {};
             firecracker = pkgs.callPackage ./nix/pkgs/firecracker.nix {
               inherit rustPlatform;
             };
@@ -36,8 +37,8 @@
             };
             firecracker-containerd = pkgs.callPackage ./nix/pkgs/firecracker-containerd.nix { };
             firecracker-ctr = pkgs.callPackage ./nix/pkgs/firecracker-ctr.nix { };
-            firecracker-default-rootfs = pkgs.callPackage ./nix/pkgs/firecracker-default-rootfs.nix {
-              inherit firecracker-containerd;
+            firecracker-rootfs = pkgs.callPackage ./nix/pkgs/firecracker-rootfs {
+              inherit firecracker-containerd static-runc;
             };
           };
         }) // {
@@ -51,7 +52,7 @@
               inherit (firecrackerPackages)
                 firecracker-kernel
                 firecracker-containerd
-                firecracker-default-rootfs
+                firecracker-rootfs
                 firecracker-ctr;
             };
         };

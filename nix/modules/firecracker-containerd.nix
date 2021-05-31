@@ -2,11 +2,46 @@
 
 let
   cfg = config.services.firecracker-containerd;
-  configFile = (pkgs.formats.toml { }).generate "config.toml" cfg.extraConfig;
-  runtimeFile = (pkgs.formats.json { }).generate "config.json" cfg.extraRuntimeConfig;
+  writeJson = (pkgs.formats.json { }).generate;
+  writeToml = (pkgs.formats.toml { }).generate;
+
+  vmConfigBase = {
+    boot-source = {
+      inherit (cfg.extraRuntimeConfig) kernel_image_path;
+      boot_args = cfg.extraRuntimeConfig.kernel_args;
+    };
+    drives = [{
+      drive_id = "rootfs";
+      path_on_host = cfg.extraRuntimeConfig.root_drive;
+      is_root_device = true;
+      is_read_only = true;
+    }];
+    machine-config = {
+      vcpu_count = 2;
+      mem_size_mib = 1024;
+      ht_enabled = false;
+    };
+  };
+
+  vmConfigNet = vmConfigBase // {
+    network-interfaces = [{
+      iface_id = "eth0";
+      guest_mac = "AA:FC:00:00:00:01";
+      host_dev_name = "tap0";
+    }];
+  };
   devmapperDir = "/var/lib/firecracker-containerd/snapshotter/devmapper";
+  socket = "/run/firecracker-containerd/containerd.sock";
   # that way we can support running container
   poolName = "fc-dev-thinpool-${config.networking.hostName}";
+
+  firecracker-ctr = (pkgs.runCommandNoCC "firecracker-ctr"
+    {
+      buildInputs = [ pkgs.makeWrapper ];
+    } ''
+    makeWrapper ${pkgs.firecracker-ctr}/bin/firecracker-ctr $out/bin/firecracker-ctr \
+      --add-flags "--address ${socket}"
+  '');
 in
 {
   options.services.firecracker-containerd = {
@@ -21,13 +56,26 @@ in
   };
 
   config = {
-    environment.etc."firecracker-containerd/config.yml".source = configFile;
-    environment.etc."firecracker-containerd/firecracker-runtime.json".source = runtimeFile;
+    environment.etc."containerd/config.toml".source = writeToml "config.toml" cfg.extraConfig;
+    # For testing: firecracker --no-api --config-file /etc/containerd/firecracker-vmconfig.json
+    environment.etc."containerd/firecracker-vmconfig.json".source = writeJson "vmconfig.json" vmConfigBase;
+
+    # Example network configuration
+    # sudo ip tuntap add tap0 mode tap user $USER
+    # sudo ip addr add 172.16.0.1/24 dev tap0
+    # sudo ip link set tap0 up
+    environment.etc."containerd/firecracker-vmconfig-net.json".source = writeJson "vmconfig-net.json" vmConfigNet;
+    environment.etc."containerd/firecracker-runtime.json".source = writeJson "config.json" cfg.extraRuntimeConfig;
+
+    environment.systemPackages = [
+      firecracker-ctr
+      pkgs.firecracker
+    ];
     services.firecracker-containerd.extraConfig = {
       disabled_plugins = [ "cri" ];
       root = "/var/lib/firecracker-containerd/containerd";
       state = "/run/firecracker-containerd";
-      grpc.address = "/run/firecracker-containerd/containerd.sock";
+      grpc.address = socket;
       plugins.devmapper = {
         pool_name = poolName;
         base_image_size = "10GB";
@@ -37,20 +85,31 @@ in
       debug.level = "debug";
     };
     services.firecracker-containerd.extraRuntimeConfig = {
-      firecracker_binary_path = "${pkgs.firecracker}";
-      kernel_image_path = "${pkgs.firecracker}/vmlinux";
-      kernel_args = ''
-        console=ttyS0 noapic reboot=k panic=1 pci=off nomodules ro systemd.journald.forward_to_console systemd.unit=firecracker.target init=/sbin/overlay-init
-      '';
-      root_drive = pkgs.firecracker-default-rootfs;
+      firecracker_binary_path = "${pkgs.firecracker}/bin/firecracker";
+      kernel_image_path = "${pkgs.firecracker-kernel}/vmlinux";
+      kernel_args = "console=ttyS0 noapic reboot=k panic=1 pci=off nomodules ro systemd.journald.forward_to_console systemd.unit=firecracker.target init=/sbin/overlay-init";
+      root_drive = pkgs.firecracker-rootfs.override ({
+        imageFilesystem = "ext4";
+      });
       cpu_template = "T2";
-      log_levels = [ "info" ];
+      log_levels = [ "debug" ];
     };
 
     systemd.services.firecracker-containerd = {
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
-      path = [ pkgs.bc pkgs.util-linux pkgs.firecracker pkgs.lvm2 ];
+      path = [
+        pkgs.bc
+        pkgs.util-linux
+        pkgs.firecracker
+        pkgs.firecracker-containerd
+        pkgs.lvm2
+        pkgs.e2fsprogs
+        pkgs.pigz
+        # for runc
+        pkgs.containerd
+        pkgs.runc
+      ];
       preStart = ''
         set -eux -o pipefail
         mkdir -p ${devmapperDir}
@@ -84,7 +143,7 @@ in
             dmsetup create "${poolName}" --table "$THINP_TABLE"
         fi
       '';
-      serviceConfig.ExecStart = "${pkgs.firecracker}/bin/firecracker";
+      serviceConfig.ExecStart = "${pkgs.firecracker-containerd}/bin/containerd --config /etc/containerd/config.toml";
     };
   };
 }

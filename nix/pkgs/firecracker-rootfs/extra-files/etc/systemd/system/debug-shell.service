@@ -1,0 +1,9 @@
+[Unit]
+Description=Interactive debug shell
+After=local-fs.target
+Requires=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/sbin/debug-shell
+Restart=always
