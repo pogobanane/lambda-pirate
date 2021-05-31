@@ -71,7 +71,8 @@ in
 
     services.k3s.role = "server";
     services.k3s.extraFlags = toString [
-      "--no-deploy traefik"
+      "--disable traefik"
+      "--disable metrics-server"
       "--flannel-backend=host-gw"
       "--kubelet-arg=cgroup-driver=systemd"
       "--container-runtime-endpoint unix:///etc/firecracker-containerd/fccd-cri.sock"
