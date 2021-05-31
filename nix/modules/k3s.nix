@@ -43,9 +43,9 @@ in
       '')
     ];
 
-    networking.firewall.allowedTCPPorts = [ 8443 ];
     services.k3s.enable = true;
     services.k3s.docker = false;
+    networking.firewall.allowedTCPPorts = [ 6443 ];
 
     # Upstream this?
     virtualisation.containerd.configFile = settingsFormat.generate "containerd.toml"
