@@ -1,5 +1,5 @@
 VHIVE_VERSION ?= v1.2
-KUSTOMIZE ?= kustomize
+KUSTOMIZE ?= kustomize build
 KUBECONFIG ?= /etc/rancher/k3s/k3s.yaml
 KUBECTL ?= kubectl --kubeconfig $(KUBECONFIG)
 ISTIOCTL ?= istioctl --kubeconfig $(KUBECONFIG)
@@ -16,4 +16,5 @@ deploy:
     curl -sL $(VHIVE_CONFIG)/registry/repository-volume.yaml |
 		REPO_VOL_SIZE=$(REPO_VOL_SIZE) envsubst | \
         $(KUBECONFIG) apply -f-
-	kustomize build | $(KUBECTL) apply  -f-
+	$(KUSTOMIZE) | $(KUBECTL) apply  -f-
+	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
