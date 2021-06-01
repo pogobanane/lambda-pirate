@@ -41,14 +41,15 @@
             };
             runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix {};
             vhive = pkgs.callPackage ./nix/pkgs/vhive.nix {};
+            istioctl = pkgs.callPackage ./nix/pkgs/istioctl.nix {};
           };
           devShell = pkgs.mkShell {
             buildInputs = [
-              pkgs.istioctl
               pkgs.kubectl
               pkgs.kustomize
               pkgs.envsubst
               pkgs.openssl
+              self.packages.${pkgs.system}.istioctl
             ];
           };
         }) // {
