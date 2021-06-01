@@ -51,7 +51,6 @@
           devShell = pkgs.mkShell {
             buildInputs = [
               pkgs.kubectl
-              pkgs.kustomize
               pkgs.envsubst
               pkgs.openssl
               pkgs.skopeo
