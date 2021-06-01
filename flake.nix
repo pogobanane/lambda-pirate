@@ -42,6 +42,15 @@
             runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix {};
             vhive = pkgs.callPackage ./nix/pkgs/vhive.nix {};
           };
+          devShell = pkgs.mkShell {
+            buildInputs = [
+              pkgs.istioctl
+              pkgs.kubectl
+              pkgs.kustomize
+              pkgs.envsubst
+              pkgs.openssl
+            ];
+          };
         }) // {
       nixosModules = {
         firecracker-pkgs = { ... }: {
