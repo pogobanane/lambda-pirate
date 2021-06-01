@@ -36,7 +36,10 @@ in
 
     services.k3s.enable = true;
     services.k3s.docker = false;
-    networking.firewall.allowedTCPPorts = [ 6443 ];
+    networking.firewall.allowedTCPPorts = [
+      6443
+      10250
+    ];
 
     virtualisation.containerd.enable = true;
 
@@ -51,7 +54,6 @@ in
     services.k3s.role = "server";
     services.k3s.extraFlags = toString [
       "--disable traefik"
-      "--disable metrics-server"
       "--disable servicelb"
       "--flannel-backend=host-gw"
       "--container-runtime-endpoint unix:///etc/firecracker-containerd/fccd-cri.sock"
