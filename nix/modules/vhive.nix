@@ -7,12 +7,15 @@
     '';
   in {
     wantedBy = ["multi-user.target"];
-    path = [ pkgs.nettools pkgs.kubectl pkgs.iptables pkgs.jq pkgs.iproute2 ];
+    path = [
+      pkgs.nettools pkgs.kubectl pkgs.iptables pkgs.jq pkgs.iproute2 pkgs.sudo
+    ];
+    # bridges are not cleaned up some time
     inherit preStart;
     postStop = preStart;
     serviceConfig ={
-      # bridges are not cleaned up some time
-      ExecStart = "${pkgs.vhive}/bin/vhive";
+      Environment = "KUBECONFIG=/etc/rancher/k3s/k3s.yaml";
+      ExecStart = "${pkgs.vhive}/bin/vhive -dbg";
     };
   };
 }
