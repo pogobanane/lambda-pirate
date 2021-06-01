@@ -42,6 +42,7 @@
             runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix {};
             vhive = pkgs.callPackage ./nix/pkgs/vhive.nix {};
             istioctl = pkgs.callPackage ./nix/pkgs/istioctl.nix {};
+            kn = pkgs.callPackage ./nix/pkgs/kn.nix {};
           };
           devShell = pkgs.mkShell {
             buildInputs = [
