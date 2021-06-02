@@ -18,7 +18,8 @@ all: deploy
 deploy:
 	$(MAKE) loadbalancer
 	$(MAKE) knative
-	$(MAKE) registry
+# this is optional to speed things up
+#	$(MAKE) registry
 	$(MAKE) minio
 	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
 
@@ -40,12 +41,12 @@ knative:
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/in-memory-channel.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/mt-channel-broker.yaml
 
-registry:
-	$(KUBECTL) create namespace registry || true
-	REPO_VOL_SIZE=$(REPO_VOL_SIZE) $(ENVSUBST) < repository-volume.yaml | \
-		$(KUBECTL) apply -f-
-	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/repository-update-hosts.yaml
-	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-default-domain.yaml
+#registry:
+#	$(KUBECTL) create namespace registry || true
+#	REPO_VOL_SIZE=$(REPO_VOL_SIZE) $(ENVSUBST) < repository-volume.yaml | \
+#		$(KUBECTL) apply -f-
+#	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/repository-update-hosts.yaml
+#	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-default-domain.yaml
 
 minio:
 	mkdir -p $(MINIO_PATH)
