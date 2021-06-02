@@ -25,6 +25,7 @@
             cargo = rustToolchain;
             rustc = rustToolchain;
           };
+          ownPkgs = self.packages.${pkgs.system};
         in
         {
           packages = rec {
@@ -41,6 +42,21 @@
             };
             runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix {};
             vhive = pkgs.callPackage ./nix/pkgs/vhive.nix {};
+            istioctl = pkgs.callPackage ./nix/pkgs/istioctl.nix {};
+            kn = pkgs.callPackage ./nix/pkgs/kn.nix {};
+            vhive-examples = pkgs.callPackage ./nix/pkgs/vhive-examples.nix {
+              inherit vhive kn;
+            };
+          };
+          devShell = pkgs.mkShell {
+            buildInputs = [
+              pkgs.kubectl
+              pkgs.envsubst
+              pkgs.openssl
+              pkgs.skopeo
+              ownPkgs.istioctl
+              ownPkgs.kn
+            ];
           };
         }) // {
       nixosModules = {
