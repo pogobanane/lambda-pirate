@@ -36,19 +36,9 @@ in
 
     services.k3s.enable = true;
     services.k3s.docker = false;
-    networking.firewall.allowedTCPPorts = [
-      # api-server
-      6443
-      # metrics-server
-      10250
-      # do we need any of those?
-      ## istio status port
-      #15020
-      ## istio http port
-      #80
-      ## istio https port
-      #443
-    ];
+
+    # for some reasons our firewall, breaks caligo... no body got time to debug this...
+    networking.firewall.enable = false;
 
     virtualisation.containerd.enable = true;
 
