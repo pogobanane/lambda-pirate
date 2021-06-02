@@ -13,7 +13,16 @@ METALLB_CONFIG ?= https://raw.githubusercontent.com/metallb/metallb/$(METALLB_VE
 MINIO_CONFIG ?= $(VHIVE_CONFIG)/storage/minio
 MINIO_PATH ?= /var/lib/k3s-minio
 
+all: deploy
+
 deploy:
+	$(MAKE) loadbalancer
+	$(MAKE) knative
+	$(MAKE) registry
+	$(MAKE) minio
+	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
+
+loadbalancer:
 	$(KUBECTL) apply -f $(METALLB_CONFIG)/namespace.yaml
 	$(KUBECTL) apply -f $(METALLB_CONFIG)/metallb.yaml
 	$(KUBECTL) apply -f ${VHIVE_CONFIG}/metallb/metallb-configmap.yaml
@@ -22,19 +31,21 @@ deploy:
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/calico/canal.yaml
 	curl -sL $(VHIVE_CONFIG)/istio/istio-minimal-operator.yaml | \
 		$(ISTIOCTL) install -y -f-
+
+knative:
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-core.yaml
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-crds.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/eventing-core.yaml
 	$(KUBECTL) apply -f https://github.com/knative/net-istio/releases/download/$(KNATIVE_VERSION)/release.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/in-memory-channel.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/mt-channel-broker.yaml
-	$(MAKE) minio
+
+registry:
 	$(KUBECTL) create namespace registry || true
 	REPO_VOL_SIZE=$(REPO_VOL_SIZE) $(ENVSUBST) < repository-volume.yaml | \
 		$(KUBECTL) apply -f-
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/repository-update-hosts.yaml
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-default-domain.yaml
-	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
 
 minio:
 	mkdir -p $(MINIO_PATH)
