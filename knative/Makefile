@@ -1,4 +1,4 @@
-VHIVE_VERSION ?= v1.2
+VHIVE_VERSION ?= 4f3d934c
 KNATIVE_VERSION ?= v0.21.0
 METALLB_VERSION ?= v0.9.4
 KUSTOMIZE ?= kustomize build
@@ -38,6 +38,7 @@ knative:
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-crds.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/eventing-core.yaml
 	$(KUBECTL) apply -f https://github.com/knative/net-istio/releases/download/$(KNATIVE_VERSION)/release.yaml
+	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-default-domain.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/in-memory-channel.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/mt-channel-broker.yaml
 
@@ -46,7 +47,6 @@ knative:
 #	REPO_VOL_SIZE=$(REPO_VOL_SIZE) $(ENVSUBST) < repository-volume.yaml | \
 #		$(KUBECTL) apply -f-
 #	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/repository-update-hosts.yaml
-#	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-default-domain.yaml
 
 minio:
 	mkdir -p $(MINIO_PATH)
