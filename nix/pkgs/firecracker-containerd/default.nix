@@ -33,6 +33,11 @@ buildGoModule rec {
     mv $out/bin/{runtime,containerd-shim-aws-firecracker}
   '';
 
+  patches = [
+    # this would set CPUID which breaks if you try to run firecracker in a VM.
+    ./0001-unset-cputemplate.patch
+  ];
+
   doCheck = false; # does not work in sandbox
   vendorSha256 = "sha256-wtVfLkKLy7mkUltRWuIoOzALE3zl8CND820GUF5FGvQ=";
 }
