@@ -31,5 +31,5 @@ buildGoModule rec {
     ./0001-increase-vm-start-timeout.patch
   ];
 
-  vendorSha256 = "sha256-LsXL2jS/w5fES8lX9n2rbQtgVjuleNwQjVNd+Xjp5TI=";
+  vendorSha256 = "sha256-iuNbO1z6pygnRf9sczj7VPi2Fz0kQorWSIb8+DXtXnU=";
 }
