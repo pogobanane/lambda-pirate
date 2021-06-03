@@ -1,5 +1,10 @@
 { pkgs, ... }:
 {
+
+  systemd.tmpfiles.rules = [
+    "D /etc/firecracker-containerd 0755 root root - -"
+  ];
+
   systemd.services.vhive = let
     preStart = ''
       rm -rf /etc/firecracker-containerd/fccd-cri.sock
