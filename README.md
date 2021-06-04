@@ -3,6 +3,9 @@ using vmsh in a lambda environment
 
 ## To deploy knative (after setting up k3s + vhive nixos module)
 
+After adding the nixos modules the kubernetes manifests will be deployed.
+One can manually run them like that:
+
 ```console
 $ sudo make -C knative deploy -j$(nproc)
 $ sudo -E kubectl get pod --all-namespaces
