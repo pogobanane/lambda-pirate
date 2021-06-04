@@ -10,7 +10,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, fenix }:
-    flake-utils.lib.eachSystem ["x86_64-linux" "aarch64-linux"]
+    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ]
       (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
@@ -26,6 +26,17 @@
             rustc = rustToolchain;
           };
           ownPkgs = self.packages.${pkgs.system};
+          deployPkgs = [
+            pkgs.kubectl
+            pkgs.coreutils
+            pkgs.nettools
+            pkgs.envsubst
+            pkgs.openssl
+            pkgs.gnused
+            pkgs.curl
+            ownPkgs.istioctl
+            pkgs.curl
+          ];
         in
         {
           packages = rec {
@@ -40,19 +51,20 @@
             firecracker-rootfs = pkgs.callPackage ./nix/pkgs/firecracker-rootfs {
               inherit firecracker-containerd runc-static;
             };
-            runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix {};
-            vhive = pkgs.callPackage ./nix/pkgs/vhive.nix {};
-            istioctl = pkgs.callPackage ./nix/pkgs/istioctl.nix {};
-            kn = pkgs.callPackage ./nix/pkgs/kn.nix {};
+            runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix { };
+            vhive = pkgs.callPackage ./nix/pkgs/vhive.nix { };
+            istioctl = pkgs.callPackage ./nix/pkgs/istioctl.nix { };
+            kn = pkgs.callPackage ./nix/pkgs/kn.nix { };
             vhive-examples = pkgs.callPackage ./nix/pkgs/vhive-examples.nix {
               inherit vhive kn;
             };
+            deploy-knative = pkgs.writeShellScriptBin "deploy-knative" ''
+              export PATH=${pkgs.lib.makeBinPath deployPkgs}
+              exec ${pkgs.gnumake}/bin/make -C ${./knative} deploy
+            '';
           };
           devShell = pkgs.mkShell {
-            buildInputs = [
-              pkgs.kubectl
-              pkgs.envsubst
-              pkgs.openssl
+            buildInputs = deployPkgs ++ [
               pkgs.skopeo
               ownPkgs.istioctl
               ownPkgs.kn
@@ -78,6 +90,17 @@
                 firecracker-ctr;
             };
         };
+        knative = { ... }: {
+          imports = [
+            {
+              nixpkgs.config.packageOverrides = pkgs: {
+                inherit (self.packages.${pkgs.system}) deploy-knative;
+              };
+            }
+            self.nixosModules.k3s
+            ./nix/modules/knative.nix
+          ];
+        };
         k3s = { ... }: {
           imports = [
             self.nixosModules.firecracker-containerd
@@ -86,7 +109,7 @@
         };
         vhive = { ... }: {
           imports = [
-            ({...}: {
+            ({ ... }: {
               nixpkgs.config.packageOverrides = pkgs: {
                 inherit (self.packages.${pkgs.system}) vhive;
               };

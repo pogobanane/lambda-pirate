@@ -1,7 +1,7 @@
 { buildGoModule, go-bindata, fetchFromGitHub }:
 
 buildGoModule rec {
-  pname = "istioct";
+  pname = "istioctl";
   # latest version still fails
   version = "1.7.1";
   nativeBuildInputs = [ go-bindata ];
