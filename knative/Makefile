@@ -23,11 +23,21 @@ all: deploy
 deploy: ## deploy knative
 	$(MAKE) loadbalancer
 	$(MAKE) knative
-# this is optional to speed things up
-#	$(MAKE) registry
+	# this is optional to speed things up
+	# $(MAKE) registry
 	$(MAKE) minio
 	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
 
+# XXX test & extend for overlayfs
+burn-down-cluster: ## delete all cluster data and repopulate the cluster
+	systemctl stop --no-block containerd firecracker-containerd vhive k3s
+	# can fail with exit 1 because racy
+	find /sys/fs/cgroup/kubepods -name cgroup.procs | xargs cat | xargs -r kill -9 || true
+	mount | awk '/\/var\/lib\/kubelet|\/run\/netns|\/run\/containerd/ {print $$3}' | xargs -r umount
+	dataset=$(shell grep /var/lib/containerd/io.containerd.snapshotter.v1.zfs /proc/mounts | awk '{print $$1}'); \
+	  if [[ -n "$$dataset" ]]; then zfs destroy -R "$$dataset"; fi
+	rm -rf /var/lib/rancher/ /var/lib/containerd /etc/rancher /run/containerd/
+	systemctl start containerd firecracker-containerd vhive k3s
 
 loadbalancer: ## deploy load balancer
 	$(KUBECTL) apply -f $(METALLB_CONFIG)/namespace.yaml
@@ -40,7 +50,9 @@ loadbalancer: ## deploy load balancer
 		$(ISTIOCTL) install -y -f-
 
 knative: ## deploy knative
-	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-core.yaml
+    # always fails the first time ?
+	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-core.yaml || \
+		$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-core.yaml
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-crds.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/eventing-core.yaml
 	$(KUBECTL) apply -f https://github.com/knative/net-istio/releases/download/$(KNATIVE_VERSION)/release.yaml
