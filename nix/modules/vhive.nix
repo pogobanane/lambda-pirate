@@ -8,6 +8,8 @@
     '';
   in {
     wantedBy = ["multi-user.target"];
+    after = [ "firecracker-containerd.service" "containerd.service" ];
+    wants = [ "firecracker-containerd.service" "containerd.service" ];
     path = [
       pkgs.nettools pkgs.kubectl pkgs.iptables pkgs.jq pkgs.iproute2 pkgs.sudo
     ];
