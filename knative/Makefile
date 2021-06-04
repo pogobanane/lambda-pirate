@@ -13,19 +13,14 @@ METALLB_CONFIG ?= https://raw.githubusercontent.com/metallb/metallb/$(METALLB_VE
 MINIO_CONFIG ?= $(VHIVE_CONFIG)/storage/minio
 MINIO_PATH ?= /var/lib/k3s-minio
 
-.PHONY: help
+.PHONY: help deploy minio loadbalancer knative
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 all: deploy
 
-deploy: ## deploy knative
-	$(MAKE) loadbalancer
-	$(MAKE) knative
-	# this is optional to speed things up
-	# $(MAKE) registry
-	$(MAKE) minio
+deploy: minio loadbalancer knative ## deploy knative
 	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
 
 # XXX test & extend for overlayfs
@@ -37,7 +32,7 @@ burn-down-cluster: ## delete all cluster data and repopulate the cluster
 	dataset=$(shell grep /var/lib/containerd/io.containerd.snapshotter.v1.zfs /proc/mounts | awk '{print $$1}'); \
 	  if [[ -n "$$dataset" ]]; then zfs destroy -R "$$dataset"; fi
 	rm -rf /var/lib/rancher/ /var/lib/containerd /etc/rancher /run/containerd/
-	systemctl start containerd firecracker-containerd vhive k3s
+	systemctl start k3s
 
 loadbalancer: ## deploy load balancer
 	$(KUBECTL) apply -f $(METALLB_CONFIG)/namespace.yaml
@@ -49,7 +44,7 @@ loadbalancer: ## deploy load balancer
 	curl -sL $(VHIVE_CONFIG)/istio/istio-minimal-operator.yaml | \
 		$(ISTIOCTL) install -y -f-
 
-knative: ## deploy knative
+knative: loadbalancer ## deploy knative
     # always fails the first time ?
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-core.yaml || \
 		$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-core.yaml
@@ -60,11 +55,12 @@ knative: ## deploy knative
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/in-memory-channel.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/mt-channel-broker.yaml
 
-#registry:
-#	$(KUBECTL) create namespace registry || true
-#	REPO_VOL_SIZE=$(REPO_VOL_SIZE) $(ENVSUBST) < repository-volume.yaml | \
-#		$(KUBECTL) apply -f-
-#	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/repository-update-hosts.yaml
+# this is optional to speed things up
+registry:
+	$(KUBECTL) create namespace registry || true
+	REPO_VOL_SIZE=$(REPO_VOL_SIZE) $(ENVSUBST) < repository-volume.yaml | \
+		$(KUBECTL) apply -f-
+	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/repository-update-hosts.yaml
 
 minio: ## deploy minio
 	mkdir -p $(MINIO_PATH)
