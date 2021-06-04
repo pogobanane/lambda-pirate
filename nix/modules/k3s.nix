@@ -50,6 +50,11 @@ in
       ExecStartPre = "-${pkgs.zfs}/bin/zfs create -o mountpoint=/var/lib/containerd/io.containerd.snapshotter.v1.zfs zroot/containerd";
     };
 
+    systemd.services.k3s = {
+      after = [ "vhive.service" ];
+      wants = [ "vhive.service" ];
+    };
+
     services.k3s.role = "server";
     services.k3s.extraFlags = toString [
       "--disable traefik"

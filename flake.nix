@@ -57,6 +57,11 @@
               ownPkgs.istioctl
               ownPkgs.kn
             ];
+            shellHook = ''
+              if [ -n $KUBECONFIG ]; then
+                export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+              fi
+            '';
           };
         }) // {
       nixosModules = {

@@ -97,7 +97,7 @@ in
 
     systemd.services.firecracker-containerd = {
       wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ];
+      after = [ "network.target" ];
       path = [
         pkgs.bc
         pkgs.util-linux
