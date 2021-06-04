@@ -13,9 +13,14 @@ METALLB_CONFIG ?= https://raw.githubusercontent.com/metallb/metallb/$(METALLB_VE
 MINIO_CONFIG ?= $(VHIVE_CONFIG)/storage/minio
 MINIO_PATH ?= /var/lib/k3s-minio
 
+.PHONY: help
+
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
 all: deploy
 
-deploy:
+deploy: ## deploy knative
 	$(MAKE) loadbalancer
 	$(MAKE) knative
 # this is optional to speed things up
@@ -23,7 +28,8 @@ deploy:
 	$(MAKE) minio
 	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
 
-loadbalancer:
+
+loadbalancer: ## deploy load balancer
 	$(KUBECTL) apply -f $(METALLB_CONFIG)/namespace.yaml
 	$(KUBECTL) apply -f $(METALLB_CONFIG)/metallb.yaml
 	$(KUBECTL) apply -f ${VHIVE_CONFIG}/metallb/metallb-configmap.yaml
@@ -33,7 +39,7 @@ loadbalancer:
 	curl -sL $(VHIVE_CONFIG)/istio/istio-minimal-operator.yaml | \
 		$(ISTIOCTL) install -y -f-
 
-knative:
+knative: ## deploy knative
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-core.yaml
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/knative_yamls/serving-crds.yaml
 	$(KUBECTL) apply -f $(KNATIVE_CONFIG)/eventing-core.yaml
@@ -48,7 +54,7 @@ knative:
 #		$(KUBECTL) apply -f-
 #	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/repository-update-hosts.yaml
 
-minio:
+minio: ## deploy minio
 	mkdir -p $(MINIO_PATH)
 	# create a persistent volume (PV) and the corresponding PV claim
     # specify the node name that would host the MinIO objects
