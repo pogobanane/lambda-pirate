@@ -1,6 +1,57 @@
 # λ🏴‍☠️ lambda-pirate
 using vmsh in a lambda environment
 
+## Build single packages
+
+We use [nix](https://nixos.org/download.html) with [nix flakes](https://nixos.wiki/wiki/Flakes) to build
+modules.
+
+To list all defined components use:
+
+``` console
+$ nix flake show
+```
+
+Packages can be build with `nix build .#$pkgname` i.e.:
+
+``` console
+$ nix build .#packages.vhive
+```
+
+In NixOS one can include the nixos modules in their configuration to deploy a
+single-node [k3s](https://k3s.io),
+[firecracker-containerd](https://github.com/firecracker-microvm/firecracker-containerd),
+[containerd](https://containerd.io/), [knative](https://knative.dev) and
+[vhive](https://github.com/ease-lab/vhive). 
+
+To do so include the following configuration in your flake.nix
+
+```nix
+{
+    description = "NixOS configuration";
+    inputs.lambda-pirate.url = "github:pogobanane/lambda-pirate";
+    outputs = { nixpkgs, lambda-pirate }: {
+      bernie = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux"; # replace with your arch
+        modules = [
+          ./configuration.nix # or whatever configuration you use...
+          lambda-pirate.nixosModules.knative
+          lambda-pirate.nixosModules.vhive
+        ];
+      };
+    };
+}
+```
+
+Checkout the nixos modules in [nix/modules](./nix/modules) for further details.
+If you do changes to the checked out lambda-pirate repository you can also apply
+those to NixOS using `--override-input` for `nixos-rebuild`:
+
+``` console
+$ nixos-rebuild switch --override-input lambda-pirate ./.
+```
+
+
 ## To deploy knative (after setting up k3s + vhive nixos module)
 
 After adding the nixos modules the kubernetes manifests will be deployed.
