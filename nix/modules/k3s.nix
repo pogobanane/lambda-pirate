@@ -40,6 +40,9 @@ in
     # for some reasons our firewall, breaks caligo... no body got time to debug this...
     networking.firewall.enable = false;
 
+    # having iptables in path is still useful for debugging
+    environment.systemPackages = [ pkgs.iptables ];
+
     virtualisation.containerd.enable = true;
 
     virtualisation.containerd.settings = {
