@@ -26,8 +26,9 @@ deploy: minio loadbalancer knative ## deploy knative
 # XXX test & extend for overlayfs
 burn-down-cluster: ## delete all cluster data and repopulate the cluster
 	systemctl stop --no-block containerd firecracker-containerd vhive k3s
-	# can fail with exit 1 because racy
-	find /sys/fs/cgroup/kubepods -name cgroup.procs | xargs cat | xargs -r kill -9 || true
+	# can fail with when it does not exists
+	find /sys/fs/cgroup/systemd/system.slice/containerd.service* /sys/fs/cgroup/systemd/kubepods* -name cgroup.procs | \
+		xargs cat | xargs -r kill -9 || true
 	mount | awk '/\/var\/lib\/kubelet|\/run\/netns|\/run\/containerd/ {print $$3}' | xargs -r umount
 	dataset=$(shell grep /var/lib/containerd/io.containerd.snapshotter.v1.zfs /proc/mounts | awk '{print $$1}'); \
 	  if [[ -n "$$dataset" ]]; then zfs destroy -R "$$dataset"; fi
