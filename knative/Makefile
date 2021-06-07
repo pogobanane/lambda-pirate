@@ -23,9 +23,15 @@ all: deploy
 deploy: minio loadbalancer knative ## deploy knative
 	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
 
+# when the autoscaler overloads your system again
+killvms:
+	sudo pkill -SIGTERM firecracker
+
 # XXX test & extend for overlayfs
 burn-down-cluster: ## delete all cluster data and repopulate the cluster
 	systemctl stop --no-block containerd firecracker-containerd vhive k3s
+	# forget all DHCP reservations in 10.42.0.0/32
+	su -c "rm /var/lib/cni/networks/cbr0/*"
 	# can fail with when it does not exists
 	find /sys/fs/cgroup/systemd/system.slice/containerd.service* /sys/fs/cgroup/systemd/kubepods* -name cgroup.procs | \
 		xargs cat | xargs -r kill -9 || true
