@@ -1,11 +1,13 @@
-From 4510afffc493f03bffb16c61984ba924420d6c65 Mon Sep 17 00:00:00 2001
+From aa2aa06a00db18b5baff6af1eae7200301539ea9 Mon Sep 17 00:00:00 2001
 From: Pogobanane <aenderboy@gmx.de>
 Date: Thu, 3 Jun 2021 15:59:35 +0000
 Subject: [PATCH] unset cputemplate
 
 ---
- config/config.go | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ config/config.go                                 | 2 +-
+ config/config.json.example                       | 2 +-
+ examples/etc/containerd/firecracker-runtime.json | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/config/config.go b/config/config.go
 index ef45032..c8993e8 100644
@@ -20,6 +22,32 @@ index ef45032..c8993e8 100644
  		ShimBaseDir:     defaultShimBaseDir,
  		JailerConfig: JailerConfig{
  			RuncConfigPath: runcConfigPath,
+diff --git a/config/config.json.example b/config/config.json.example
+index 33dae8f..5312827 100644
+--- a/config/config.json.example
++++ b/config/config.json.example
+@@ -3,7 +3,7 @@
+   "kernel_image_path": "vmlinux",
+   "kernel_args": "console=ttyS0 noapic reboot=k panic=1 pci=off nomodules rw",
+   "root_drive": "./vsock.img",
+-  "cpu_template": "T2",
++  "cpu_template": "",
+   "log_levels": ["debug"],
+   "ht_enabled": false
+ }
+diff --git a/examples/etc/containerd/firecracker-runtime.json b/examples/etc/containerd/firecracker-runtime.json
+index d826c4d..9db4663 100644
+--- a/examples/etc/containerd/firecracker-runtime.json
++++ b/examples/etc/containerd/firecracker-runtime.json
+@@ -4,7 +4,7 @@
+   "kernel_args": "ro console=ttyS0 noapic reboot=k panic=1 pci=off nomodules systemd.journald.forward_to_console systemd.unit=firecracker.target init=/sbin/overlay-init",
+   "root_drive": "/var/lib/firecracker-containerd/runtime/default-rootfs.img",
+   "cpu_count": 1,
+-  "cpu_template": "T2",
++  "cpu_template": "",
+   "log_levels": ["debug"],
+   "jailer": {
+     "runc_binary_path": "/usr/local/bin/runc"
 -- 
 2.31.1
 
