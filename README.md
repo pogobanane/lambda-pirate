@@ -15,7 +15,7 @@ $ nix flake show
 Packages can be build with `nix build .#$pkgname` i.e.:
 
 ``` console
-$ nix build .#packages.vhive
+$ nix build .#vhive
 ```
 
 In NixOS one can include the nixos modules in their configuration to deploy a

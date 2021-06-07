@@ -91,7 +91,7 @@ in
       root_drive = pkgs.firecracker-rootfs.override ({
         imageFilesystem = "ext4";
       });
-      cpu_template = "T2";
+      cpu_template = "";
       log_levels = [ "debug" ];
     };
 
