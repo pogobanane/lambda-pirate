@@ -12,7 +12,7 @@ To list all defined components use:
 $ nix flake show
 ```
 
-Packages can be build with `nix build .#$pkgname` i.e.:
+Packages can be built into `result/` with `nix build .#$pkgname` i.e.:
 
 ``` console
 $ nix build .#vhive
@@ -88,6 +88,13 @@ knative-eventing   mt-broker-ingress-546d6868c9-nbbtf         1/1     Running   
 knative-serving    default-domain-97lz6                       0/1     Completed   0          5m20s
 knative-eventing   eventing-webhook-67877858b4-zwstl          1/1     Running     0          3m37s
 
+```
+
+## Usage
+
+```console
+sudo -E ./result/bin/deployer # deploy the functions
+sudo -E ./result/bin/invoker # test invocations according to urls.txt
 ```
 
 ## Clean deploy (deletes k3s/containerd completly everyting!)
