@@ -1,0 +1,76 @@
+From 228719c9f58d331b8627e545a61a6c2217d2ae93 Mon Sep 17 00:00:00 2001
+From: Pogobanane <aenderboy@gmx.de>
+Date: Mon, 14 Jun 2021 07:39:04 +0000
+Subject: [PATCH] limit autoscaling min
+
+---
+ configs/knative_workloads/helloworld.yaml       | 1 +
+ configs/knative_workloads/helloworldSerial.yaml | 1 +
+ configs/knative_workloads/helloworld_local.yaml | 1 +
+ configs/knative_workloads/pyaes.yaml            | 1 +
+ configs/knative_workloads/rnn_serving.yaml      | 1 +
+ 5 files changed, 5 insertions(+)
+
+diff --git a/configs/knative_workloads/helloworld.yaml b/configs/knative_workloads/helloworld.yaml
+index b8c0022..6e26abc 100644
+--- a/configs/knative_workloads/helloworld.yaml
++++ b/configs/knative_workloads/helloworld.yaml
+@@ -7,6 +7,7 @@ spec:
+     metadata:
+       annotations:
+         autoscaling.knative.dev/maxScale: "2"
++        autoscaling.knative.dev/minScale: "2"
+     spec:
+       containers:
+         - image: crccheck/hello-world:latest # Stub image. See https://github.com/ease-lab/vhive/issues/68
+diff --git a/configs/knative_workloads/helloworldSerial.yaml b/configs/knative_workloads/helloworldSerial.yaml
+index 9fbc99a..232276d 100644
+--- a/configs/knative_workloads/helloworldSerial.yaml
++++ b/configs/knative_workloads/helloworldSerial.yaml
+@@ -7,6 +7,7 @@ spec:
+     metadata:
+       annotations:
+         autoscaling.knative.dev/maxScale: "2"
++        autoscaling.knative.dev/minScale: "2"
+     spec:
+       containerConcurrency: 1
+       containers:
+diff --git a/configs/knative_workloads/helloworld_local.yaml b/configs/knative_workloads/helloworld_local.yaml
+index 48b9f89..233c538 100644
+--- a/configs/knative_workloads/helloworld_local.yaml
++++ b/configs/knative_workloads/helloworld_local.yaml
+@@ -7,6 +7,7 @@ spec:
+     metadata:
+       annotations:
+         autoscaling.knative.dev/maxScale: "2"
++        autoscaling.knative.dev/minScale: "2"
+     spec:
+       containers:
+         - image: crccheck/hello-world:latest # Stub image. See https://github.com/ease-lab/vhive/issues/68
+diff --git a/configs/knative_workloads/pyaes.yaml b/configs/knative_workloads/pyaes.yaml
+index fdec066..11b779c 100644
+--- a/configs/knative_workloads/pyaes.yaml
++++ b/configs/knative_workloads/pyaes.yaml
+@@ -7,6 +7,7 @@ spec:
+     metadata:
+       annotations:
+         autoscaling.knative.dev/maxScale: "2"
++        autoscaling.knative.dev/minScale: "2"
+     spec:
+       containers:
+         - image: crccheck/hello-world:latest # Stub image. See https://github.com/ease-lab/vhive/issues/68
+diff --git a/configs/knative_workloads/rnn_serving.yaml b/configs/knative_workloads/rnn_serving.yaml
+index 879f302..877819b 100644
+--- a/configs/knative_workloads/rnn_serving.yaml
++++ b/configs/knative_workloads/rnn_serving.yaml
+@@ -7,6 +7,7 @@ spec:
+     metadata:
+       annotations:
+         autoscaling.knative.dev/maxScale: "2"
++        autoscaling.knative.dev/minScale: "2"
+     spec:
+       containers:
+         - image: crccheck/hello-world:latest # Stub image. See https://github.com/ease-lab/vhive/issues/68
+-- 
+2.31.1
+

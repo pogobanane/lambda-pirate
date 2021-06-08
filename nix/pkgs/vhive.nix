@@ -29,6 +29,9 @@ buildGoModule rec {
     })
 
     ./0001-increase-vm-start-timeout.patch
+    #./0001-set-upper-limit-for-autoscaling.patch
+    #./0001-enable-autoscaling-limits.patch
+    ./0001-limit-autoscaling-for-workloads.patch
   ];
 
   vendorSha256 = "sha256-iuNbO1z6pygnRf9sczj7VPi2Fz0kQorWSIb8+DXtXnU=";
