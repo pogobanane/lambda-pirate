@@ -1,0 +1,25 @@
+---
+kind: pipeline
+type: exec
+name: Build example vhive configuration
+
+platform:
+  os: linux
+  arch: amd64
+
+clone:
+  depth: 1
+
+steps:
+- name: build machine
+  commands:
+  - nix build .#nixosConfigurations.example-host.config.system.build.toplevel --builders ''
+trigger:
+  event:
+  - push
+
+---
+kind: signature
+hmac: 3995676e2a03f0d0ed4d0bc204d6103ced3645150b49b5ffe96d5bd2f322502e
+
+...
