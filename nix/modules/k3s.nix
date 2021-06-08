@@ -32,6 +32,8 @@ in
         makeWrapper ${pkgs.kubernetes}/bin/kubectl $out/bin/kubectl \
           --set KUBECONFIG "/etc/kubernetes/cluster-admin.kubeconfig"
       '')
+      # having iptables in path is still useful for debugging
+      pkgs.iptables
     ];
 
     services.k3s.enable = true;
@@ -39,9 +41,6 @@ in
 
     # for some reasons our firewall, breaks caligo... no body got time to debug this...
     networking.firewall.enable = false;
-
-    # having iptables in path is still useful for debugging
-    environment.systemPackages = [ pkgs.iptables ];
 
     virtualisation.containerd.enable = true;
 
