@@ -27,6 +27,10 @@ deploy: minio loadbalancer knative ## deploy knative
 killvms:
 	sudo pkill -SIGTERM firecracker
 
+# after cd ~/vhive && go install ./... you can run the deployer via:
+vhive-deployer:
+	~/go/bin/deployer -jsonFile ~/vhive/examples/deployer/functions.json -funcPath ~/vhive/configs/knative_workloads
+
 # XXX test & extend for overlayfs
 burn-down-cluster: ## delete all cluster data and repopulate the cluster
 	systemctl stop --no-block containerd firecracker-containerd vhive k3s
