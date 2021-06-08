@@ -1,0 +1,34 @@
+From ade748cd6b818dc8f3552dbd6a26cb1f906f822d Mon Sep 17 00:00:00 2001
+From: Pogobanane <aenderboy@gmx.de>
+Date: Tue, 8 Jun 2021 08:20:49 +0000
+Subject: [PATCH] set upper limit for autoscaling
+
+---
+ configs/knative_yamls/serving-core.yaml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configs/knative_yamls/serving-core.yaml b/configs/knative_yamls/serving-core.yaml
+index 5ecee60..09283fe 100644
+--- a/configs/knative_yamls/serving-core.yaml
++++ b/configs/knative_yamls/serving-core.yaml
+@@ -1139,7 +1139,7 @@ data:
+     # max-scale is the cluster-wide default value for the max scale of a revision,
+     # unless overridden by the "autoscaling.knative.dev/maxScale" annotation.
+     # If set to 0, the revision has no maximum scale.
+-    max-scale: "0"
++    max-scale: "32"
+ 
+     # scale-down-delay is the amount of time that must pass at reduced
+     # concurrency before a scale down decision is applied. This can be useful,
+@@ -1152,7 +1152,7 @@ data:
+     # When this is set to a positive value, a revision with a maxScale above that value
+     # (including a maxScale of "0" = unlimited) is disallowed.
+     # A value of zero (the default) allows any limit, including unlimited.
+-    max-scale-limit: "0"
++    max-scale-limit: "32"
+ 
+ ---
+ # Copyright 2019 The Knative Authors
+-- 
+2.31.1
+
