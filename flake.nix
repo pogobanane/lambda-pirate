@@ -65,6 +65,7 @@
           };
           devShell = pkgs.mkShell {
             buildInputs = deployPkgs ++ [
+              pkgs.just
               pkgs.skopeo
               ownPkgs.istioctl
               ownPkgs.kn
