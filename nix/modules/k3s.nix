@@ -39,19 +39,9 @@ in
     services.k3s.enable = true;
     services.k3s.docker = false;
 
-    # example firewall:
-    networking.firewall.enable = true;
-    networking.firewall.allowedTCPPortRanges = [ { from = 0; to = 65535; } ];
-    networking.firewall.allowedUDPPortRanges = [ { from = 0; to = 65535; } ];
+    # update firewall whitelist for use if it is enabled
+    networking.firewall.allowedTCPPorts = [ 6443 ];
     networking.firewall.checkReversePath = false;
-    # # keep in mind that the following may be ineffective, because kubernetes
-    # # throws iptable rules all over the place at the wrong time
-    # networking.firewall.extraCommands = ''
-    #   iptables -I INPUT 1 -i tinc.retiolum -j DROP
-    # '';
-    # networking.firewall.extraStopCommands = ''
-    #   iptables -D INPUT -i tinc.retiolum -j DROP
-    # '';
 
     virtualisation.containerd.enable = true;
 
