@@ -2,18 +2,24 @@
   description = "A very basic flake";
 
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    vhive = {
+      url = "github:pogobanane/vhive";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, fenix }:
+  outputs = { self, nixpkgs, flake-utils, fenix, vhive }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ]
       (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          vhiveSrc = vhive;
           fenixPkgs = fenix.packages.${system};
           rustToolchain = with fenixPkgs; combine [
             stable.cargo
@@ -52,7 +58,9 @@
               inherit firecracker-containerd runc-static;
             };
             runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix { };
-            vhive = pkgs.callPackage ./nix/pkgs/vhive.nix { };
+            vhive = pkgs.callPackage ./nix/pkgs/vhive.nix {
+              inherit vhiveSrc;
+            };
             istioctl = pkgs.callPackage ./nix/pkgs/istioctl.nix { };
             kn = pkgs.callPackage ./nix/pkgs/kn.nix { };
             vhive-examples = pkgs.callPackage ./nix/pkgs/vhive-examples.nix {
@@ -67,6 +75,7 @@
             buildInputs = deployPkgs ++ [
               pkgs.just
               pkgs.skopeo
+              pkgs.git-lfs
               ownPkgs.istioctl
               ownPkgs.kn
             ];
