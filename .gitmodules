@@ -2,4 +2,4 @@
 	path = documents/paper
 [submodule "vhive"]
 	path = vhive
-	url = https://github.com/pogobanane/vhive
+	url = git@github.com:pogobanane/vhive.git
