@@ -75,7 +75,6 @@
             buildInputs = deployPkgs ++ [
               pkgs.just
               pkgs.skopeo
-              pkgs.git-lfs
               ownPkgs.istioctl
               ownPkgs.kn
             ];
