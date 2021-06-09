@@ -1,2 +1,5 @@
 [submodule "documents/paper"]
 	path = documents/paper
+[submodule "vhive"]
+	path = vhive
+	url = https://github.com/ease-lab/vhive
