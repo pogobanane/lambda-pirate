@@ -5,11 +5,12 @@ buildGoModule rec {
   version = "1.2";
 
   # not fetchFromGitHub to skip git-lfs assets
-  src = fetchgit {
-    url = "https://github.com/ease-lab/vhive";
-    rev = "v${version}";
-    sha256 = "sha256-cTSXOkDD7nvwhCabfUdmdTUoDr2+q7fk3JrGzifHyto=";
-  };
+  # src = fetchgit {
+  #   url = "https://github.com/ease-lab/vhive";
+  #   rev = "v${version}";
+  #   sha256 = "sha256-cTSXOkDD7nvwhCabfUdmdTUoDr2+q7fk3JrGzifHyto=";
+  # };
+  src = ../../vhive;
 
   subPackages = [ "." ];
 
