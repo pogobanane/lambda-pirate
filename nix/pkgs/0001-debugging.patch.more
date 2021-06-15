@@ -1,0 +1,70 @@
+From fe05518dd97db38dc0f9aeb1ed98ae5d78f232bb Mon Sep 17 00:00:00 2001
+From: Pogobanane <aenderboy@gmx.de>
+Date: Fri, 4 Jun 2021 12:17:49 +0000
+Subject: [PATCH] debugging
+
+---
+ examples/invoker/client.go                    | 9 +++++++--
+ examples/protobuf/helloworld/helloworld.pb.go | 3 ++-
+ 2 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/examples/invoker/client.go b/examples/invoker/client.go
+index 1352a5b..a06dfed 100644
+--- a/examples/invoker/client.go
++++ b/examples/invoker/client.go
+@@ -44,6 +44,7 @@ var (
+ )
+ 
+ func main() {
++	log.Info("foo")
+ 	urlFile := flag.String("urlFile", "urls.txt", "File with functions' URLs")
+ 	rps := flag.Int("rps", 1, "Target requests per second")
+ 	runDuration := flag.Int("time", 5, "Run the benchmark for X seconds")
+@@ -85,6 +86,7 @@ func runBenchmark(urls []string, runDuration, targetRPS int) (realRPS float64) {
+ 	var issued int
+ 	start := time.Now()
+ 
++	log.Info("for")
+ 	for {
+ 		select {
+ 		case <-timeout:
+@@ -98,6 +100,7 @@ func runBenchmark(urls []string, runDuration, targetRPS int) (realRPS float64) {
+ 			return
+ 		case <-tick:
+ 			url := urls[issued%len(urls)]
++			log.Info("invokeFunction ", url)
+ 			go invokeFunction(url)
+ 
+ 			issued++
+@@ -121,9 +124,11 @@ func invokeFunction(url string) {
+ 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+ 	defer cancel()
+ 
+-	_, err = c.SayHello(ctx, &pb.HelloRequest{Name: "faas"})
++	log.Info("hello request ", &pb.HelloRequest{Name: "faas"})
++	out, err := c.SayHello(ctx, &pb.HelloRequest{Name: "faas"})
++	log.Info("respone ", out)
+ 	if err != nil {
+-		log.Warnf("Failed to invoke %v, err=%v", address, err)
++		log.Warnf("foo Failed to invoke %v, err=%v", address, err)
+ 	}
+ 
+ 	atomic.AddInt64(&completed, 1)
+diff --git a/examples/protobuf/helloworld/helloworld.pb.go b/examples/protobuf/helloworld/helloworld.pb.go
+index c851b09..9bd56d7 100644
+--- a/examples/protobuf/helloworld/helloworld.pb.go
++++ b/examples/protobuf/helloworld/helloworld.pb.go
+@@ -289,8 +289,9 @@ func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
+ func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+ 	out := new(HelloReply)
+ 	err := c.cc.Invoke(ctx, "/helloworld.Greeter/SayHello", in, out, opts...)
++	//log.Info("out", out)
+ 	if err != nil {
+-		return nil, err
++		return out, err
+ 	}
+ 	return out, nil
+ }
+-- 
+2.31.1
+
