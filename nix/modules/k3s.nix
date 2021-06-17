@@ -40,7 +40,10 @@ in
     services.k3s.docker = false;
 
     # update firewall whitelist for use if it is enabled
-    networking.firewall.allowedTCPPorts = [ 6443 ];
+    networking.firewall.allowedTCPPorts = [ 
+      6443 # kube api server
+      8001 # proxy exposing 6441 insecurely
+    ];
     networking.firewall.checkReversePath = false;
 
     virtualisation.containerd.enable = true;
