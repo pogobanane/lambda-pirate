@@ -7,7 +7,7 @@ buildGoModule rec {
   version = "peterTag";
   #ldflags = "-w";
 
-  # # not fetchFromGitHub to skip git-lfs assets
+  # not fetchFromGitHub to skip git-lfs assets
   # src = fetchgit {
   #   url = "https://github.com/pogobanane/vhive";
   #   rev = "${version}";
@@ -24,6 +24,7 @@ buildGoModule rec {
     pkgs.just
     pkgs.go-langserver
     pkgs.delve
+    pkgs.skopeo
   ];
 
   patches = [
@@ -46,5 +47,6 @@ buildGoModule rec {
     #./0001-debug-print-guest-IPs.patch
   ];
 
-  vendorSha256 = "sha256-zDXhO7uDbPLdr6RYFiGJp3AZXGj7B8nIXCrdWRJVQkM=";
+  vendorSha256 = null;
+  #vendorSha256 = "sha256-zDXhO7uDbPLdr6RYFiGJp3AZXGj7B8nIXCrdWRJVQkM=";
 }

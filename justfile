@@ -14,17 +14,22 @@ make-incinerate:
     sudo -E make -C knative burn-down-cluster
 
 make-deploy:
-    sudo -E make -C knative deploy -j$(nproc)
+    CONFIG_ACCESSOR=cat VHIVE_CONFIG=/home/peter/vhive/configs sudo -E make -C knative deploy -j$(nproc)
+    CONFIG_ACCESSOR=cat VHIVE_CONFIG=/home/peter/vhive/configs sudo -E make -C knative registry
+
 
 # after cd ~/vhive && go install ./... you can run the deployer via:
 vhive-deployer:
-    sudo -E ~/go/bin/deployer -jsonFile ~/vhive/examples/deployer/functions.json -funcPath ~/vhive/configs/knative_workloads
+    sudo -E ~/go/bin/deployer -jsonFile ~/vhive/examples/deployer/functions.json -funcPath ~/vhive/configs/knative_workloads -urlFile /tmp/urls.txt
 
 vhive-invoker-slow:
     ~/go/bin/invoker -time 20
 
 vhive-invoker-fast:
     ~/go/bin/invoker -rps 20 -time 20
+
+vhive-registry:
+    sudo ~/go/bin/registry -imageFile ~/vhive/examples/registry/images.txt -source docker://docker.io -destination docker://docker-registry.registry.svc.cluster.local.10.43.225.186.nip.io:5000
 
 watch-pods-all:
     watch sudo -E kubectl get pod --all-namespaces
@@ -37,6 +42,9 @@ fcctr:
     sudo firecracker-ctr -n firecracker-containerd containers list
     echo "containerid/task to pid mapping: not host pid"
     sudo firecracker-ctr -n firecracker-containerd tasks ls
+
+fcctr-delete:
+    for i in {0..200}; do sudo firecracker-ctr -n firecracker-containerd containers delete $i; done
 
 # proxy to remove all security from rest api
 kube-proxy:

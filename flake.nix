@@ -36,6 +36,10 @@
             pkgs.curl
             ownPkgs.istioctl
             pkgs.curl
+            pkgs.go
+            pkgs.go-langserver
+            pkgs.delve
+            pkgs.lsof
           ];
         in
         {
@@ -66,6 +70,8 @@
           devShell = pkgs.mkShell {
             buildInputs = deployPkgs ++ [
               pkgs.just
+              pkgs.jq
+              pkgs.libcgroup
               pkgs.skopeo
               ownPkgs.istioctl
               ownPkgs.kn
