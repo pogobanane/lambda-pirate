@@ -64,7 +64,7 @@
             };
             deploy-knative = pkgs.writeShellScriptBin "deploy-knative" ''
               export PATH=${pkgs.lib.makeBinPath deployPkgs}
-              exec ${pkgs.gnumake}/bin/make -C ${./knative} deploy
+              #exec ${pkgs.gnumake}/bin/make -C ${./knative} deploy
             '';
           };
           devShell = pkgs.mkShell {

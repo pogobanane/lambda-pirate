@@ -1,4 +1,6 @@
 
+vhive_dir := invocation_directory() + "/../vhive"
+
 # print this help
 help: 
     just -l
@@ -7,6 +9,12 @@ help:
 killvms:
     sudo pkill -SIGTERM firecracker
 
+reset: 
+    just make-incinerate
+    just make-deploy
+    while [[ 24 -gt $(sudo -E kubectl get pod --all-namespaces | grep "Running" | wc -l) ]]; do sleep 1; done
+    sleep 5
+    just vhive-deployer
 nixos-rebuild: 
     sudo nixos-rebuild switch --impure --override-input lambda-pirate ./.
 
@@ -14,13 +22,14 @@ make-incinerate:
     sudo -E make -C knative burn-down-cluster
 
 make-deploy:
-    CONFIG_ACCESSOR=cat VHIVE_CONFIG=/home/peter/vhive/configs sudo -E make -C knative deploy -j$(nproc)
-    CONFIG_ACCESSOR=cat VHIVE_CONFIG=/home/peter/vhive/configs sudo -E make -C knative registry
-
+    CONFIG_ACCESSOR=cat VHIVE_CONFIG={{vhive_dir}}/configs sudo -E make -C knative deploy -j$(nproc)
 
 # after cd ~/vhive && go install ./... you can run the deployer via:
 vhive-deployer:
-    sudo -E ~/go/bin/deployer -jsonFile ~/vhive/examples/deployer/functions.json -funcPath ~/vhive/configs/knative_workloads -urlFile /tmp/urls.txt
+    sudo -E ~/go/bin/deployer -jsonFile {{vhive_dir}}/examples/deployer/functions.json -funcPath {{vhive_dir}}/configs/knative_workloads -urlFile /tmp/urls.txt
+
+vhive-deploy-local:
+    sudo -E kn service apply helloworldlocal -f {{vhive_dir}}/configs/knative_workloads/helloworld_local.yaml
 
 vhive-invoker-slow:
     ~/go/bin/invoker -time 20

@@ -8,12 +8,18 @@ buildGoModule rec {
   #ldflags = "-w";
 
   # not fetchFromGitHub to skip git-lfs assets
-  # src = fetchgit {
-  #   url = "https://github.com/pogobanane/vhive";
-  #   rev = "${version}";
-  #   sha256 = "sha256-P7QtHVXvXZwsWhVAy2hE6/KKZ14bVPBeBc3yT8+PUDY=";
-  # };
-  src = /home/peter/vhive;
+  src = fetchgit {
+    url = "https://github.com/pogobanane/vhive";
+    rev = "${version}";
+    sha256 = "sha256-P7QtHVXvXZwsWhVAy2hE6/KKZ14bVPBeBc3yT8+PUDY=";
+  };
+  # The following src is quite useless, because:
+  # - it only works with --impure
+  # - it is not a cleanbuild because the user has to run go mod vendor before
+  # - go mod vendor does not work in preBuild = ''foo'';
+  # => one must run go mod vendor before using this vhive.nix
+  # => don't use this vhive.nix for local dev builds
+  # src = /home/peter/vhive;
 
   subPackages = [ "." ];
 
