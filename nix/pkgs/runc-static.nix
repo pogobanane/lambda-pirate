@@ -6,7 +6,6 @@ runc.overrideAttrs  (old: rec {
 
   buildPhase = ''
     runHook preBuild
-    cd go/src/${runc.goPackagePath}
     patchShebangs .
     make static man COMMIT=${runc.version} VERSION=${runc.version} BUILDTAGS=
     runHook postBuild
