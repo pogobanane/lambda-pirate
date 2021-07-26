@@ -11,10 +11,17 @@ killvms:
 
 reset: 
     just make-incinerate
+    just vhive-registry
     just make-deploy
     while [[ 24 -gt $(sudo -E kubectl get pod --all-namespaces | grep "Running" | wc -l) ]]; do sleep 1; done
     sleep 5
     just vhive-deployer
+
+reset-notify:
+    #!/bin/sh
+    just reset
+    sendtelegram "vhive resetted $?"
+
 nixos-rebuild: 
     sudo nixos-rebuild switch --impure --override-input lambda-pirate ./.
 
@@ -38,7 +45,9 @@ vhive-invoker-fast:
     ~/go/bin/invoker -rps 20 -time 20 --endpointsFile /tmp/endpoints.json
 
 vhive-registry:
-    sudo ~/go/bin/registry -imageFile ~/vhive/examples/registry/images.txt -source docker://docker.io -destination docker://docker-registry.registry.svc.cluster.local.10.43.225.186.nip.io:5000
+    #CONFIG_ACCESSOR=cat VHIVE_CONFIG=/home/peter/vhive/configs sudo -E make -C knative registry
+    sudo ~/go/bin/registry -imageFile {{vhive_dir}}/examples/registry/images.txt -source docker://docker.io 
+    #-destination docker://docker-registry.registry.svc.cluster.local.10.43.225.186.nip.io:5000
 
 watch-pods-all:
     watch sudo -E kubectl get pod --all-namespaces

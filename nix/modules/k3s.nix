@@ -38,13 +38,19 @@ in
 
     services.k3s.enable = true;
     services.k3s.docker = false;
+    services.dockerRegistry.enable = true;
+    services.dockerRegistry.listenAddress = "0.0.0.0";
 
     # update firewall whitelist for use if it is enabled
     networking.firewall.allowedTCPPorts = [ 
       6443 # kube api server
       8001 # proxy exposing 6441 insecurely
+      5000 # docker registry
     ];
     networking.firewall.checkReversePath = false;
+
+    # IP under which this host is reachable in the local network. TODO needs config
+    networking.hosts = { "192.168.178.79" = [ "docker-registry.registry.svc.cluster.local" ]; };
 
     virtualisation.containerd.enable = true;
 
