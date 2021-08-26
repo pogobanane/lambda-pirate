@@ -75,6 +75,7 @@
               pkgs.skopeo
               ownPkgs.istioctl
               ownPkgs.kn
+              rustToolchain
             ];
             shellHook = ''
               if [ -n $KUBECONFIG ]; then
