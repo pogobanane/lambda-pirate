@@ -55,7 +55,10 @@ in
     virtualisation.containerd.enable = true;
 
     virtualisation.containerd.settings = {
-      plugins."io.containerd.grpc.v1.cri".cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
+      # this leads to /var/lib/cni being created...
+      plugins.cri.cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
+      # ...whereas i replaced it with the following because of some package update
+      #plugins."io.containerd.grpc.v1.cri".cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
     };
 
     systemd.services.containerd.serviceConfig = lib.mkIf config.boot.zfs.enabled {
