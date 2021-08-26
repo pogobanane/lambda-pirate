@@ -53,6 +53,10 @@ those to NixOS using `--override-input` for `nixos-rebuild`:
 $ nixos-rebuild switch --override-input lambda-pirate ./.
 ```
 
+## Development
+
+Clone vhive and build it via `just make`.
+
 
 ## To deploy knative (after setting up k3s + vhive nixos module)
 
