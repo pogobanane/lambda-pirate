@@ -50,7 +50,9 @@
             firecracker-kernel = pkgs.callPackage ./nix/pkgs/firecracker-kernel.nix {
               inherit firecracker;
             };
-            firecracker-containerd = pkgs.callPackage ./nix/pkgs/firecracker-containerd { };
+            firecracker-containerd = pkgs.callPackage ./nix/pkgs/firecracker-containerd {
+              #inherit rustPlatform;
+            };
             firecracker-ctr = pkgs.callPackage ./nix/pkgs/firecracker-ctr.nix { };
             firecracker-rootfs = pkgs.callPackage ./nix/pkgs/firecracker-rootfs {
               inherit firecracker-containerd runc-static;
@@ -94,7 +96,8 @@
                 firecracker-kernel
                 firecracker-containerd
                 firecracker-rootfs
-                firecracker-ctr;
+                firecracker-ctr
+                firecracker;
             };
         };
         knative = { ... }: {
