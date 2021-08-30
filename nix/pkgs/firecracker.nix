@@ -16,6 +16,9 @@ rustPlatform.buildRustPackage rec {
     linuxHeaders
   ];
   LIBCLANG_PATH = "${llvmPackages_latest.libclang.lib}/lib";
+  patches = [
+    ./0001-disable-seccomp-by-default.patch
+  ];
   buildPhase = ''
     runHook preBuild
     export BINDGEN_EXTRA_CLANG_ARGS=$NIX_CFLAGS_COMPILE
@@ -23,6 +26,7 @@ rustPlatform.buildRustPackage rec {
     cargo build -p jailer --frozen --release --target=${muslTarget} --target-dir=target
     mv target/${muslTarget} target/${hostTarget}
     runHook postBuild
+    echo poo
   '';
   shellHook = ''
     export BINDGEN_EXTRA_CLANG_ARGS=$NIX_CFLAGS_COMPILE
