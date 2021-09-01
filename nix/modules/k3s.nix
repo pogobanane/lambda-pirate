@@ -45,7 +45,7 @@ in
     virtualisation.containerd.enable = true;
 
     virtualisation.containerd.settings = {
-      plugins.cri.cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
+      plugins."io.containerd.grpc.v1.cri".cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
     };
 
     systemd.services.containerd.serviceConfig = lib.mkIf config.boot.zfs.enabled {
