@@ -78,6 +78,7 @@
               pkgs.jq
               pkgs.libcgroup
               pkgs.skopeo
+              pkgs.just
               ownPkgs.istioctl
               ownPkgs.kn
               ownPkgs.vhive-examples
@@ -90,6 +91,16 @@
             '';
           };
         }) // {
+      nixosConfigurations = {
+        example-host = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            self.nixosModules.knative
+            self.nixosModules.vhive
+            { boot.isContainer = true; }
+          ];
+        };
+      };
       nixosModules = {
         firecracker-pkgs = { ... }: {
           nixpkgs.config.packageOverrides = pkgs:

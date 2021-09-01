@@ -1,4 +1,3 @@
-
 vhive_dir := `echo "$(dirname $(which deployer))/../share/vhive-examples"`
 vhive_bin := ""
 #vhive_dir := invocation_directory() + "/../vhive"
@@ -76,3 +75,7 @@ kube-proxy:
 # didnt work
 # curl -k "http://localhost:8001/apis/autoscaling/v1/namespaces/default/horizontalpodautoscalers/minio-deployment-877b8596f-4x9nc"
 
+sign-drone:
+  DRONE_SERVER=https://drone.thalheim.io \
+  DRONE_TOKEN=$(cat $HOME/.secret/drone-token) \
+    nix shell --inputs-from .# 'nixpkgs#drone-cli' -c drone sign pogobanane/lambda-pirate --save
