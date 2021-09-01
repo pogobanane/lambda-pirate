@@ -41,6 +41,9 @@
             pkgs.delve
             pkgs.lsof
           ];
+          packageOverrides = pkgs.callPackage ./nix/python-packages.nix { };
+          python = pkgs.python3.override { inherit packageOverrides; };
+          pythonWithPackages = python.withPackages (ps: [ ps.logfmt ]);
         in
         {
           packages = rec {
@@ -77,6 +80,7 @@
               pkgs.skopeo
               ownPkgs.istioctl
               ownPkgs.kn
+              pythonWithPackages
             ];
             shellHook = ''
               if [ -n $KUBECONFIG ]; then
