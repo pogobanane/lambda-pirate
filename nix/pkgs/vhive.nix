@@ -11,8 +11,8 @@ buildGoModule rec {
   # not fetchFromGitHub to skip git-lfs assets
   src = fetchgit {
     url = "https://github.com/pogobanane/vhive";
-    rev = "cee2268d8dc4d8ae439d2c28ac78532edba573b5";
-    sha256 = "sha256-4opnN6F53F6eL45zYOkDygB8BB1jwGCp7L3yO0Vs1gE=";
+    rev = "6621a95c41c28125127b540d3d275aeeca581e06";
+    sha256 = "sha256-42GbbZr8pVwZvr0I699sIu7S9CH77yjIRWgbyFyh320=";
   };
   # The following src is quite useless, because:
   # - it only works with --impure
@@ -42,11 +42,6 @@ buildGoModule rec {
     #./0001-limit-autoscaling-min.patch
     #./0001-debug-print-guest-IPs.patch
   ];
-
-  patchPhase = ''
-    # we now use vendored/peter which is already vendored
-    #go mod vendor
-  '';
 
   deleteVendor = true;
   #vendorSha256 = null;
