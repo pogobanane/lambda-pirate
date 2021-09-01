@@ -24,6 +24,16 @@ let
   pinned-containerd = pkgs.callPackage ../pkgs/containerd.nix { };
 in
 {
+  options = {
+    services.vhive.dockerRegistryIp = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = ''
+        IP of the host reachable from the cluster, where the registry is running
+      '';
+    };
+  };
+
   config = {
     nixpkgs.overlays = [
       (self: super: {
@@ -60,7 +70,7 @@ in
     networking.firewall.checkReversePath = false;
 
     # IP under which this host is reachable in the local network. TODO needs config
-    networking.hosts = { "192.168.178.79" = [ "docker-registry.registry.svc.cluster.local" ]; };
+    networking.hosts = { ${config.services.vhive.dockerRegistryIp} = [ "docker-registry.registry.svc.cluster.local" ]; };
 
     virtualisation.containerd.enable = true;
 
