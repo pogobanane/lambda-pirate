@@ -30,7 +30,7 @@ burn-down-cluster: ## delete all cluster data and repopulate the cluster
 	# forget all DHCP reservations in 10.42.0.0/32
 	rm /var/lib/cni/networks/cbr0/* || true
 	# can fail with when it does not exists
-	find /sys/fs/cgroup/systemd/system.slice/containerd.service* /sys/fs/cgroup/systemd/kubepods* -name cgroup.procs | \
+	find /sys/fs/cgroup/systemd/system.slice/containerd.service* /sys/fs/cgroup/systemd/kubepods* /sys/fs/cgroup/kubepods* -name cgroup.procs | \
 		xargs cat | xargs -r kill -9 || true
 	mount | awk '/\/var\/lib\/kubelet|\/run\/netns|\/run\/containerd/ {print $$3}' | xargs -r umount
 	dataset=$(shell grep /var/lib/containerd/io.containerd.snapshotter.v1.zfs /proc/mounts | awk '{print $$1}'); \
