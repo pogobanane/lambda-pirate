@@ -11,9 +11,8 @@ buildGoModule rec {
   # not fetchFromGitHub to skip git-lfs assets
   src = fetchgit {
     url = "https://github.com/pogobanane/vhive";
-    rev = "8ca309b856e47448907292955f32af6ecad148c6";
-    sha256 = null;
-    #sha256 = "sha256-4WGmW+HiRfvnNqiGndBGucyDPY3W3XDDPuadtNa6gOM=";
+    rev = "cee2268d8dc4d8ae439d2c28ac78532edba573b5";
+    sha256 = "sha256-4opnN6F53F6eL45zYOkDygB8BB1jwGCp7L3yO0Vs1gE=";
   };
   # The following src is quite useless, because:
   # - it only works with --impure
@@ -36,17 +35,6 @@ buildGoModule rec {
   ];
 
   patches = [
-    # # available in next release
-    # (fetchpatch {
-    #   url = "https://github.com/ease-lab/vhive/commit/db5cac4a1a25f17229bd26af84503ec235a14707.patch";
-    #   sha256 = "sha256-Wqc6DKhDPK+1JmuWEiq0bxFJxWScoj247aaNPDLOA4Q=";
-    # })
-    # https://github.com/ease-lab/vhive/pull/265
-    #(fetchpatch {
-      #url = "https://github.com/ease-lab/vhive/commit/c71594795c5cccd0d1c432ff6819048dab966c86.patch";
-      #sha256 = "sha256-a1Q81zcI5+6/nHTznUxVGabX6dCFNDzofrV2ijiVmoY=";
-    #})
-
     #./0001-increase-vm-start-timeout.patch
     ##./0001-set-upper-limit-for-autoscaling.patch
     ##./0001-enable-autoscaling-limits.patch
@@ -60,6 +48,7 @@ buildGoModule rec {
     #go mod vendor
   '';
 
-  vendorSha256 = null;
-  #vendorSha256 = "sha256-zDXhO7uDbPLdr6RYFiGJp3AZXGj7B8nIXCrdWRJVQkM=";
+  deleteVendor = true;
+  #vendorSha256 = null;
+  vendorSha256 = "sha256-BDL+2MKOLALy3aRUy/FTZ3nutOIMUFMtVJA+AJMBfdU=";
 }
