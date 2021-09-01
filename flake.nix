@@ -41,6 +41,9 @@
             pkgs.delve
             pkgs.lsof
           ];
+          packageOverrides = pkgs.callPackage ./nix/python-packages.nix { };
+          python = pkgs.python3.override { inherit packageOverrides; };
+          pythonWithPackages = python.withPackages (ps: [ ps.logfmt ]);
         in
         {
           packages = rec {
@@ -78,7 +81,9 @@
               ownPkgs.istioctl
               ownPkgs.kn
               rustToolchain
-            ];
+              pythonWithPackages
+            ]
+            ;
             shellHook = ''
               if [ -n $KUBECONFIG ]; then
                 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
