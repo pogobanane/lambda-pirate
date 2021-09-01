@@ -1,9 +1,28 @@
 { pkgs, ... }:
 {
+  virtualisation.docker.enable = true;
 
   systemd.tmpfiles.rules = [
     "D /etc/firecracker-containerd 0755 root root - -"
   ];
+
+  # required for skopeo (image cache)
+  environment.etc."containers/policy.json".text = ''
+      {
+          "default": [
+              {
+                  "type": "insecureAcceptAnything"
+              }
+          ],
+          "transports":
+              {
+                  "docker-daemon":
+                      {
+                          "": [{"type":"insecureAcceptAnything"}]
+                      }
+              }
+      }
+    ''; # writeToml "config.toml" cfg.extraConfig;
 
   systemd.services.vhive = let
     preStart = ''
@@ -23,7 +42,8 @@
     serviceConfig ={
       Environment = "KUBECONFIG=/etc/rancher/k3s/k3s.yaml";
       Restart = "on-failure";
-      ExecStart = "${pkgs.vhive}/bin/vhive -dbg";
+      ExecStart = "${pkgs.vhive}/bin/vhive -dbg -snapshots";
+      #ExecStart = "/home/peter/go/bin/vhive -dbg -snapshots";
     };
   };
 }

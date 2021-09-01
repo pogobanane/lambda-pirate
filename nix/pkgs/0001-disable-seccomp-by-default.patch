@@ -1,0 +1,25 @@
+From f264feb91d33e9094bce730794bb22cc7591323a Mon Sep 17 00:00:00 2001
+From: Pogobanane <aenderboy@gmx.de>
+Date: Fri, 27 Aug 2021 14:21:27 +0000
+Subject: [PATCH] disable seccomp by default
+
+---
+ src/firecracker/src/main.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/firecracker/src/main.rs b/src/firecracker/src/main.rs
+index fb5b6430..6c397684 100644
+--- a/src/firecracker/src/main.rs
++++ b/src/firecracker/src/main.rs
+@@ -77,7 +77,7 @@ fn main() {
+         .arg(
+             Argument::new("seccomp-level")
+                 .takes_value(true)
+-                .default_value("2")
++                .default_value("0")
+                 .help(
+                     "Level of seccomp filtering (0: no filter | 1: filter by syscall number | 2: filter by syscall \
+                      number and argument values) that will be passed to executed path as argument."
+-- 
+2.32.0
+

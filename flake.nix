@@ -36,7 +36,14 @@
             pkgs.curl
             ownPkgs.istioctl
             pkgs.curl
+            pkgs.go
+            pkgs.go-langserver
+            pkgs.delve
+            pkgs.lsof
           ];
+          packageOverrides = pkgs.callPackage ./nix/python-packages.nix { };
+          python = pkgs.python3.override { inherit packageOverrides; };
+          pythonWithPackages = python.withPackages (ps: [ ps.logfmt ]);
         in
         {
           packages = rec {
@@ -52,7 +59,7 @@
               inherit firecracker-containerd runc-static;
             };
             runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix { };
-            vhive = pkgs.callPackage ./nix/pkgs/vhive.nix { };
+            vhive = pkgs.callPackage ./nix/pkgs/vhive.nix { inherit pkgs; };
             istioctl = pkgs.callPackage ./nix/pkgs/istioctl.nix { };
             kn = pkgs.callPackage ./nix/pkgs/kn.nix { };
             vhive-examples = pkgs.callPackage ./nix/pkgs/vhive-examples.nix {
@@ -60,15 +67,21 @@
             };
             deploy-knative = pkgs.writeShellScriptBin "deploy-knative" ''
               export PATH=${pkgs.lib.makeBinPath deployPkgs}
-              exec ${pkgs.gnumake}/bin/make -C ${./knative} deploy
+              # too expensive. Maybe we should remove deploy-knative entirely.
+              # exec ${pkgs.gnumake}/bin/make -C ${./knative} deploy
             '';
           };
           devShell = pkgs.mkShell {
             buildInputs = deployPkgs ++ [
+              pkgs.just
+              pkgs.jq
+              pkgs.libcgroup
               pkgs.skopeo
               pkgs.just
               ownPkgs.istioctl
               ownPkgs.kn
+              ownPkgs.vhive-examples
+              pythonWithPackages
             ];
             shellHook = ''
               if [ -n $KUBECONFIG ]; then
@@ -98,7 +111,8 @@
                 firecracker-kernel
                 firecracker-containerd
                 firecracker-rootfs
-                firecracker-ctr;
+                firecracker-ctr
+                firecracker;
             };
         };
         knative = { ... }: {

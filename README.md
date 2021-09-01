@@ -3,6 +3,8 @@ using vmsh in a lambda environment
 
 ## Build single packages
 
+(For development check out vhive manually and use `just make`.)
+
 We use [nix](https://nixos.org/download.html) with [nix flakes](https://nixos.wiki/wiki/Flakes) to build
 modules.
 
@@ -51,14 +53,13 @@ those to NixOS using `--override-input` for `nixos-rebuild`:
 $ nixos-rebuild switch --override-input lambda-pirate ./.
 ```
 
-
 ## To deploy knative (after setting up k3s + vhive nixos module)
 
 After adding the nixos modules the kubernetes manifests will be deployed.
 One can manually run them like that:
 
 ```console
-$ sudo make -C knative deploy -j$(nproc)
+$ just make-deploy
 $ sudo -E kubectl get pod --all-namespaces
 NAMESPACE          NAME                                       READY   STATUS      RESTARTS   AGE
 kube-system        metrics-server-86cbb8457f-lzqng            1/1     Running     0          8m15s
@@ -93,13 +94,19 @@ knative-eventing   eventing-webhook-67877858b4-zwstl          1/1     Running   
 ## Usage
 
 ```console
-sudo -E ./result/bin/deployer # deploy the functions
-sudo -E ./result/bin/invoker # test invocations according to urls.txt
+just vhive-deployer # deploy the functions
+just vhive-invoker-slow # test invocations according to urls.txt
 ```
 
 ## Clean deploy (deletes k3s/containerd completly everyting!)
 
 ```console
-$ sudo make -C knative burn-down-cluster && sudo make -C knative deploy -j$(nproc)
+just reset
 ```
 
+## Development
+
+To use use your own local vhive build, check the commented paths in:
+
+- justfile
+- nix/modules/vhive.nix

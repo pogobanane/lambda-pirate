@@ -38,14 +38,27 @@ in
 
     services.k3s.enable = true;
     services.k3s.docker = false;
+    services.dockerRegistry.enable = true;
+    services.dockerRegistry.listenAddress = "0.0.0.0";
 
-    # for some reasons our firewall, breaks caligo... no body got time to debug this...
-    networking.firewall.enable = false;
+    # update firewall whitelist for use if it is enabled
+    networking.firewall.allowedTCPPorts = [ 
+      6443 # kube api server
+      8001 # proxy exposing 6441 insecurely
+      5000 # docker registry
+    ];
+    networking.firewall.checkReversePath = false;
+
+    # IP under which this host is reachable in the local network. TODO needs config
+    networking.hosts = { "192.168.178.79" = [ "docker-registry.registry.svc.cluster.local" ]; };
 
     virtualisation.containerd.enable = true;
 
     virtualisation.containerd.settings = {
+      # this leads to /var/lib/cni being created...
       plugins.cri.cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
+      # ...whereas i replaced it with the following because of some package update
+      #plugins."io.containerd.grpc.v1.cri".cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
     };
 
     systemd.services.containerd.serviceConfig = lib.mkIf config.boot.zfs.enabled {

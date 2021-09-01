@@ -7,6 +7,7 @@ KUBECTL ?= kubectl
 ISTIOCTL ?= istioctl
 ENVSUBST ?= envsubst
 REPO_VOL_SIZE ?= 5Gi
+CONFIG_ACCESSOR ?= curl -sL
 VHIVE_CONFIG ?= https://raw.githubusercontent.com/ease-lab/vhive/${VHIVE_VERSION}/configs
 KNATIVE_CONFIG ?= https://github.com/knative/eventing/releases/download/$(KNATIVE_VERSION)
 METALLB_CONFIG ?= https://raw.githubusercontent.com/metallb/metallb/$(METALLB_VERSION)/manifests
@@ -23,15 +24,11 @@ all: deploy
 deploy: minio loadbalancer knative ## deploy knative
 	$(KUBECTL) --namespace istio-system get service istio-ingressgateway
 
-# when the autoscaler overloads your system again
-killvms:
-	sudo pkill -SIGTERM firecracker
-
 # XXX test & extend for overlayfs
 burn-down-cluster: ## delete all cluster data and repopulate the cluster
 	systemctl stop --no-block containerd firecracker-containerd vhive k3s
 	# forget all DHCP reservations in 10.42.0.0/32
-	rm /var/lib/cni/networks/cbr0/*
+	rm /var/lib/cni/networks/cbr0/* || true
 	# can fail with when it does not exists
 	find /sys/fs/cgroup/systemd/system.slice/containerd.service* /sys/fs/cgroup/systemd/kubepods* -name cgroup.procs | \
 		xargs cat | xargs -r kill -9 || true
@@ -40,6 +37,7 @@ burn-down-cluster: ## delete all cluster data and repopulate the cluster
 	  if [[ -n "$$dataset" ]]; then zfs destroy -R "$$dataset"; fi
 	rm -rf /var/lib/rancher/ /var/lib/containerd /etc/rancher /run/containerd/
 	systemctl start k3s
+	sudo firecracker-ctr -n firecracker-containerd containers ls | cut -d " " -f 1 | tail -n +2 | while read line; do sudo firecracker-ctr -n firecracker-containerd containers delete "$$line"; done
 
 loadbalancer: ## deploy load balancer
 	$(KUBECTL) apply -f $(METALLB_CONFIG)/namespace.yaml
@@ -48,7 +46,7 @@ loadbalancer: ## deploy load balancer
 	$(KUBECTL) get secret -n metallb-system memberlist || \
 		$(KUBECTL) create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/calico/canal.yaml
-	curl -sL $(VHIVE_CONFIG)/istio/istio-minimal-operator.yaml | \
+	$(CONFIG_ACCESSOR) $(VHIVE_CONFIG)/istio/istio-minimal-operator.yaml | \
 		$(ISTIOCTL) install -y -f-
 
 knative: loadbalancer ## deploy knative
@@ -68,18 +66,19 @@ registry:
 	REPO_VOL_SIZE=$(REPO_VOL_SIZE) $(ENVSUBST) < repository-volume.yaml | \
 		$(KUBECTL) apply -f-
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/repository-update-hosts.yaml
+	$(KUBECTL) apply -f $(VHIVE_CONFIG)/registry/docker-registry.yaml
 
 minio: ## deploy minio
 	mkdir -p $(MINIO_PATH)
 	# create a persistent volume (PV) and the corresponding PV claim
     # specify the node name that would host the MinIO objects
 	# (use `hostname` command for the local node)
-	curl -sL $(MINIO_CONFIG)/pv.yaml | \
+	$(CONFIG_ACCESSOR) $(MINIO_CONFIG)/pv.yaml | \
 		MINIO_NODE_NAME=$(shell hostname) MINIO_PATH=$(MINIO_PATH) $(ENVSUBST) | \
         $(KUBECTL) apply -f-
 	$(KUBECTL) apply -f $(MINIO_CONFIG)/pv-claim.yaml
 	# create a storage app and the corresponding service
 	$(KUBECTL) apply -f $(MINIO_CONFIG)/deployment.yaml
-	curl -sL $(MINIO_CONFIG)/service.yaml | \
+	$(CONFIG_ACCESSOR) $(MINIO_CONFIG)/service.yaml | \
 		sed -e 's!clusterIP: .*!clusterIP: 10.43.254.254!' | \
         $(KUBECTL) apply -f-

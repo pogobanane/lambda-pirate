@@ -4,14 +4,16 @@ buildGoModule {
   subPackages = [
     "examples/invoker"
     "examples/deployer"
+    "examples/registry"
   ];
 
   postPatch = ''
     substituteInPlace ./examples/deployer/client.go \
-      --replace "./examples/deployer/functions.json" "$out/share/vhive-examples/functions.json" \
-      --replace "./configs/knative_workloads" "$out/share/vhive-examples/knative_workloads"
-     install -D ./examples/deployer/functions.json $out/share/vhive-examples/functions.json
-     cp -r ./configs/knative_workloads $out/share/vhive-examples
+      --replace "./examples/deployer/functions.json" "$out/share/vhive-examples/examples/deployer/functions.json" \
+      --replace "./configs/knative_workloads" "$out/share/vhive-examples/configs/knative_workloads"
+    install -D ./examples/deployer/functions.json $out/share/vhive-examples/examples/deployer/functions.json
+    cp -r ./configs $out/share/vhive-examples/configs
+    install -D ./examples/registry/images.txt $out/share/vhive-examples/examples/registry/images.txt
   '';
 
   postBuild = ''
@@ -33,5 +35,6 @@ buildGoModule {
   # example:
   # $ KUBECONFIG=/etc/rancher/k3s/k3s.yaml ./result/bin/deployer
   inherit (vhive) src patches;
-  vendorSha256 = "sha256-iuNbO1z6pygnRf9sczj7VPi2Fz0kQorWSIb8+DXtXnU=";
+  deleteVendor = true;
+  vendorSha256 = "sha256-BDL+2MKOLALy3aRUy/FTZ3nutOIMUFMtVJA+AJMBfdU=";
 }
