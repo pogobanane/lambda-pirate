@@ -4,7 +4,6 @@ buildGoModule rec {
   pname = "vhive";
   #version = "v" + "1.2";
   #rev = "v${version}";
-  #rev = "fb7971ce539dd6ce8dd81a42d70dc5a53833c858";
   version = "pogobanane-fork";
   #ldflags = "-w";
 
@@ -34,16 +33,6 @@ buildGoModule rec {
     pkgs.skopeo
   ];
 
-  patches = [
-    #./0001-increase-vm-start-timeout.patch
-    ##./0001-set-upper-limit-for-autoscaling.patch
-    ##./0001-enable-autoscaling-limits.patch
-    #./0001-limit-autoscaling-for-workloads.patch
-    #./0001-limit-autoscaling-min.patch
-    #./0001-debug-print-guest-IPs.patch
-  ];
-
   deleteVendor = true;
-  #vendorSha256 = null;
   vendorSha256 = "sha256-BDL+2MKOLALy3aRUy/FTZ3nutOIMUFMtVJA+AJMBfdU=";
 }

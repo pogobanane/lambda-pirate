@@ -26,7 +26,6 @@ rustPlatform.buildRustPackage rec {
     cargo build -p jailer --frozen --release --target=${muslTarget} --target-dir=target
     mv target/${muslTarget} target/${hostTarget}
     runHook postBuild
-    echo poo
   '';
   shellHook = ''
     export BINDGEN_EXTRA_CLANG_ARGS=$NIX_CFLAGS_COMPILE

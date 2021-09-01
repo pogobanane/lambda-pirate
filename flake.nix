@@ -53,9 +53,7 @@
             firecracker-kernel = pkgs.callPackage ./nix/pkgs/firecracker-kernel.nix {
               inherit firecracker;
             };
-            firecracker-containerd = pkgs.callPackage ./nix/pkgs/firecracker-containerd {
-              #inherit rustPlatform;
-            };
+            firecracker-containerd = pkgs.callPackage ./nix/pkgs/firecracker-containerd { };
             firecracker-ctr = pkgs.callPackage ./nix/pkgs/firecracker-ctr.nix { };
             firecracker-rootfs = pkgs.callPackage ./nix/pkgs/firecracker-rootfs {
               inherit firecracker-containerd runc-static;
@@ -69,7 +67,8 @@
             };
             deploy-knative = pkgs.writeShellScriptBin "deploy-knative" ''
               export PATH=${pkgs.lib.makeBinPath deployPkgs}
-              #exec ${pkgs.gnumake}/bin/make -C ${./knative} deploy
+              # too expensive. Maybe we should remove deploy-knative entirely.
+              # exec ${pkgs.gnumake}/bin/make -C ${./knative} deploy
             '';
           };
           devShell = pkgs.mkShell {

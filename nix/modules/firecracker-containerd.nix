@@ -35,9 +35,6 @@ let
   # that way we can support running container
   poolName = "fc-dev-thinpool-${config.networking.hostName}";
 
-  #pkgs.firecracker = pkgs.callPackage ../pkgs/firecracker.nix {
-    #inherit rustPlatform;
-  #};
   firecracker-ctr = (pkgs.runCommandNoCC "firecracker-ctr"
     {
       buildInputs = [ pkgs.makeWrapper ];
