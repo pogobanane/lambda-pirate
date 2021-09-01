@@ -53,11 +53,6 @@ those to NixOS using `--override-input` for `nixos-rebuild`:
 $ nixos-rebuild switch --override-input lambda-pirate ./.
 ```
 
-## Development
-
-Clone vhive and build it via `just make`.
-
-
 ## To deploy knative (after setting up k3s + vhive nixos module)
 
 After adding the nixos modules the kubernetes manifests will be deployed.
@@ -109,3 +104,9 @@ just vhive-invoker-slow # test invocations according to urls.txt
 just reset
 ```
 
+## Development
+
+To use use your own local vhive build, check the commented paths in:
+
+- justfile
+- nix/modules/vhive.nix

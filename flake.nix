@@ -80,6 +80,7 @@
               pkgs.skopeo
               ownPkgs.istioctl
               ownPkgs.kn
+              ownPkgs.vhive-examples
               pythonWithPackages
             ];
             shellHook = ''

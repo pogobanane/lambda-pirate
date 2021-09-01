@@ -12,7 +12,8 @@ buildGoModule {
       --replace "./examples/deployer/functions.json" "$out/share/vhive-examples/examples/deployer/functions.json" \
       --replace "./configs/knative_workloads" "$out/share/vhive-examples/configs/knative_workloads"
     install -D ./examples/deployer/functions.json $out/share/vhive-examples/examples/deployer/functions.json
-    cp -r ./configs/knative_workloads $out/share/vhive-examples/configs
+    #mkdir -p $out/share/vhive-examples/configs
+    cp -r ./configs $out/share/vhive-examples/configs
     install -D ./examples/registry/images.txt $out/share/vhive-examples/examples/registry/images.txt
   '';
 

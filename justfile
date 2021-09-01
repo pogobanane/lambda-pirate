@@ -1,5 +1,8 @@
 
-vhive_dir := invocation_directory() + "/../vhive"
+vhive_dir := `echo "$(dirname $(which deployer))/../share/vhive-examples"`
+vhive_bin := ""
+#vhive_dir := invocation_directory() + "/../vhive"
+#vhive_bin := "~/go/bin/"
 
 # print this help
 help: 
@@ -31,22 +34,21 @@ make-incinerate:
 make-deploy:
     CONFIG_ACCESSOR=cat VHIVE_CONFIG={{vhive_dir}}/configs sudo -E make -C knative deploy -j$(nproc)
 
-# after cd ~/vhive && go install ./... you can run the deployer via:
 vhive-deployer:
-    sudo -E ~/go/bin/deployer -jsonFile {{vhive_dir}}/examples/deployer/functions.json -funcPath {{vhive_dir}}/configs/knative_workloads --endpointsFile /tmp/endpoints.json
+    sudo -E {{vhive_bin}}deployer -jsonFile {{vhive_dir}}/examples/deployer/functions.json -funcPath {{vhive_dir}}/configs/knative_workloads --endpointsFile /tmp/endpoints.json
 
 vhive-deploy-local:
     sudo -E kn service apply helloworldlocal -f {{vhive_dir}}/configs/knative_workloads/helloworld_local.yaml
 
 vhive-invoker-slow:
-    ~/go/bin/invoker -time 20 --endpointsFile /tmp/endpoints.json
+    {{vhive_bin}}invoker -time 20 --endpointsFile /tmp/endpoints.json
 
 vhive-invoker-fast:
-    ~/go/bin/invoker -rps 20 -time 20 --endpointsFile /tmp/endpoints.json
+    {{vhive_bin}}invoker -rps 20 -time 20 --endpointsFile /tmp/endpoints.json
 
 vhive-registry:
     #CONFIG_ACCESSOR=cat VHIVE_CONFIG=/home/peter/vhive/configs sudo -E make -C knative registry
-    sudo ~/go/bin/registry -imageFile {{vhive_dir}}/examples/registry/images.txt -source docker://docker.io 
+    sudo {{vhive_bin}}registry -imageFile {{vhive_dir}}/examples/registry/images.txt -source docker://docker.io 
     #-destination docker://docker-registry.registry.svc.cluster.local.10.43.225.186.nip.io:5000
 
 watch-pods-all:
