@@ -20,9 +20,17 @@ let
       }
     ];
   };
+  pinned-cni-plugins = pkgs.callPackage ../pkgs/cni-plugins.nix { };
 in
 {
   config = {
+    nixpkgs.overlays = [
+      (self: super: {
+        # theres an required plugin missing in 1.0.0 so we pin it to 0.9.1
+        cni-plugins = pinned-cni-plugins;
+      })
+    ];
+
     environment.systemPackages = [
       (pkgs.runCommand "wrap-kubectl"
         {
