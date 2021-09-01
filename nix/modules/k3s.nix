@@ -22,6 +22,15 @@ let
   };
 in
 {
+  options = {
+    services.vhive.dockerRegistryIp = lib.mkOption {
+      type = lib.types.str;
+      description = ''
+        IP of the host reachable from the cluster, where the registry is running
+      '';
+    };
+  };
+
   config = {
     environment.systemPackages = [
       (pkgs.runCommand "wrap-kubectl"
@@ -50,7 +59,7 @@ in
     networking.firewall.checkReversePath = false;
 
     # IP under which this host is reachable in the local network. TODO needs config
-    networking.hosts = { "192.168.178.79" = [ "docker-registry.registry.svc.cluster.local" ]; };
+    networking.hosts = { ${config.services.vhive.dockerRegistryIp} = [ "docker-registry.registry.svc.cluster.local" ]; };
 
     virtualisation.containerd.enable = true;
 
