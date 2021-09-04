@@ -20,9 +20,29 @@ let
       }
     ];
   };
+  pinned-cni-plugins = pkgs.callPackage ../pkgs/cni-plugins.nix { };
+  pinned-containerd = pkgs.callPackage ../pkgs/containerd.nix { };
 in
 {
+  options = {
+    services.vhive.dockerRegistryIp = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = ''
+        IP of the host reachable from the cluster, where the registry is running
+      '';
+    };
+  };
+
   config = {
+    nixpkgs.overlays = [
+      (self: super: {
+        # theres an required plugin missing in 1.0.0 so we pin it to 0.9.1
+        cni-plugins = pinned-cni-plugins;
+        containerd = pinned-containerd;
+      })
+    ];
+
     environment.systemPackages = [
       (pkgs.runCommand "wrap-kubectl"
         {
@@ -50,7 +70,7 @@ in
     networking.firewall.checkReversePath = false;
 
     # IP under which this host is reachable in the local network. TODO needs config
-    networking.hosts = { "192.168.178.79" = [ "docker-registry.registry.svc.cluster.local" ]; };
+    networking.hosts = { ${config.services.vhive.dockerRegistryIp} = [ "docker-registry.registry.svc.cluster.local" ]; };
 
     virtualisation.containerd.enable = true;
 
@@ -62,7 +82,10 @@ in
     };
 
     systemd.services.containerd.serviceConfig = lib.mkIf config.boot.zfs.enabled {
-      ExecStartPre = "-${pkgs.zfs}/bin/zfs create -o mountpoint=/var/lib/containerd/io.containerd.snapshotter.v1.zfs zroot/containerd";
+      ExecStartPre = [
+        "-${pkgs.zfs}/bin/zfs create -o mountpoint=/var/lib/containerd/io.containerd.snapshotter.v1.zfs zroot/containerd"
+        "-${pkgs.zfs}/bin/zfs mount zroot/containerd"
+      ];
     };
 
     systemd.services.k3s = {

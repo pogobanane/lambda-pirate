@@ -7,22 +7,11 @@
   ];
 
   # required for skopeo (image cache)
-  environment.etc."containers/policy.json".text = ''
-      {
-          "default": [
-              {
-                  "type": "insecureAcceptAnything"
-              }
-          ],
-          "transports":
-              {
-                  "docker-daemon":
-                      {
-                          "": [{"type":"insecureAcceptAnything"}]
-                      }
-              }
-      }
-    ''; # writeToml "config.toml" cfg.extraConfig;
+  virtualisation.containers.enable = true;
+  virtualisation.containers.policy = {
+    default = [{ type = "insecureAcceptAnything"; }];
+    transports.docker-daemon."" = [{ type = "insecureAcceptAnything"; }];
+  };
 
   systemd.services.vhive = let
     preStart = ''
