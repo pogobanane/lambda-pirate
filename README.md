@@ -104,6 +104,14 @@ just vhive-invoker-slow # test invocations according to urls.txt
 just reset
 ```
 
+## Pirate your lambda
+
+The vhive deployer should have started a hellooopsie pod which produces an
+error on every 10th call. Start lambda-pirate (`just lambda-pirate`) and call
+the endpoint a few times (`just vhive-invoker-slow`) until the error is caught
+and vmsh is attached to the micro VM.
+
+
 ## Development
 
 To use use your own local vhive build, check the commented paths in:

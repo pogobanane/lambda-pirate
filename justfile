@@ -11,6 +11,23 @@ help:
 killvms:
     sudo pkill -SIGTERM firecracker
 
+lambda-pirate:
+  nix build github:Mic92/vmsh#vmsh -o vmsh/vmsh
+  nix build github:Mic92/vmsh#busybox-image -o vmsh/busybox.ext4
+  [[ -f vmsh/busybox.rw.ext4 ]] || cp vmsh/busybox.ext4 vmsh/busybox.rw.ext4
+  sudo -E IN_CAPSH=1 \
+      capsh \
+      --caps="cap_sys_ptrace,cap_dac_override,cap_sys_admin,cap_sys_resource+epi cap_setpcap,cap_setuid,cap_setgid+ep" \
+      --keep=1 \
+      --groups=$(id -G | sed -e 's/ /,/g') \
+      --gid=$(id -g) \
+      --uid=$(id -u) \
+      --addamb=cap_sys_resource \
+      --addamb=cap_sys_admin \
+      --addamb=cap_sys_ptrace \
+      --addamb=cap_dac_override \
+      -- -c 'export USER=$(id -un); python3 lambda-pirate.py'
+
 reset: 
     just make-incinerate
     just vhive-registry
