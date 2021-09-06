@@ -10,8 +10,8 @@ buildGoModule rec {
   # not fetchFromGitHub to skip git-lfs assets
   src = fetchgit {
     url = "https://github.com/pogobanane/vhive";
-    rev = "6621a95c41c28125127b540d3d275aeeca581e06";
-    sha256 = "sha256-42GbbZr8pVwZvr0I699sIu7S9CH77yjIRWgbyFyh320=";
+    rev = "e67a475bbf643dbbcb361bac66b5bb010750f28e";
+    sha256 = "sha256-1btY2Ze6hq3F/r8OjkySPmlYwcNhSts4m5hphKJkLfc=";
   };
   # The following src is quite useless, because:
   # - it only works with --impure
