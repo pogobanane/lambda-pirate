@@ -35,7 +35,7 @@
             pkgs.openssl
             pkgs.gnused
             pkgs.curl
-            ownPkgs.istioctl
+            pkgs.istioctl
             pkgs.curl
             pkgs.go
             pkgs.go-langserver
@@ -61,7 +61,6 @@
             };
             runc-static = pkgs.callPackage ./nix/pkgs/runc-static.nix { };
             vhive = pkgs.callPackage ./nix/pkgs/vhive.nix { inherit pkgs; };
-            istioctl = pkgs.callPackage ./nix/pkgs/istioctl.nix { };
             kn = pkgs.callPackage ./nix/pkgs/kn.nix { };
             vhive-examples = pkgs.callPackage ./nix/pkgs/vhive-examples.nix {
               inherit vhive kn;
@@ -79,7 +78,7 @@
               pkgs.libcgroup
               pkgs.skopeo
               pkgs.just
-              ownPkgs.istioctl
+              pkgs.istioctl
               ownPkgs.kn
               ownPkgs.vhive-examples
               pythonWithPackages
