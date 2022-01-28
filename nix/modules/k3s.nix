@@ -1,27 +1,7 @@
 { pkgs, lib, config, ... }:
 let
-  flannel = builtins.toJSON {
-    name = "cbr0";
-    cniVersion = "0.3.1";
-    plugins = [
-      {
-        type = "flannel";
-        delegate = {
-          hairpinMode = true;
-          forceAddress = true;
-          isDefaultGateway = true;
-        };
-      }
-      {
-        type = "portmap";
-        capabilities = {
-          portMappings = true;
-        };
-      }
-    ];
-  };
-  pinned-cni-plugins = pkgs.callPackage ../pkgs/cni-plugins.nix { };
-  pinned-containerd = pkgs.callPackage ../pkgs/containerd.nix { };
+  #pinned-cni-plugins = pkgs.callPackage ../pkgs/cni-plugins.nix { };
+  #pinned-containerd = pkgs.callPackage ../pkgs/containerd.nix { };
 in
 {
   options = {
@@ -36,11 +16,11 @@ in
 
   config = {
     nixpkgs.overlays = [
-      (self: super: {
-        # theres an required plugin missing in 1.0.0 so we pin it to 0.9.1
-        cni-plugins = pinned-cni-plugins;
-        containerd = pinned-containerd;
-      })
+      #(self: super: {
+      #  # theres an required plugin missing in 1.0.0 so we pin it to 0.9.1
+      #  cni-plugins = pinned-cni-plugins;
+      #  containerd = pinned-containerd;
+      #})
     ];
 
     environment.systemPackages = [
@@ -75,10 +55,15 @@ in
     virtualisation.containerd.enable = true;
 
     virtualisation.containerd.settings = {
+      version = 2;
       # this leads to /var/lib/cni being created...
-      plugins.cri.cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
-      # ...whereas i replaced it with the following because of some package update
-      #plugins."io.containerd.grpc.v1.cri".cni.conf_dir = "${pkgs.writeTextDir "net.d/10-flannel.conflist" flannel}/net.d";
+      plugins."io.containerd.grpc.v1.cri" = {
+        cni.conf_dir = "/var/lib/rancher/k3s/agent/etc/cni/net.d/";
+        cni.bin_dir = "${pkgs.runCommand "cni-bin-dir" {} ''
+          mkdir -p $out
+          ln -sf ${pkgs.cni-plugins}/bin/* ${pkgs.cni-plugin-flannel}/bin/* $out
+        ''}";
+      };
     };
 
     systemd.services.containerd.serviceConfig = lib.mkIf config.boot.zfs.enabled {
