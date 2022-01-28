@@ -51,7 +51,7 @@ make-deploy:
     CONFIG_ACCESSOR=cat VHIVE_CONFIG={{vhive_dir}}/configs sudo -E make -C knative deploy -j$(nproc)
 
 vhive-deployer:
-    sudo -E {{vhive_bin}}deployer -jsonFile {{vhive_dir}}/examples/deployer/functions.json -funcPath {{vhive_dir}}/configs/knative_workloads --endpointsFile /tmp/endpoints.json
+    sudo -E {{vhive_bin}}deployer -jsonFile knative/functions.json -funcPath {{vhive_dir}}/configs/knative_workloads --endpointsFile /tmp/endpoints.json
 
 vhive-deploy-local:
     sudo -E kn service apply helloworldlocal -f {{vhive_dir}}/configs/knative_workloads/helloworld_local.yaml
