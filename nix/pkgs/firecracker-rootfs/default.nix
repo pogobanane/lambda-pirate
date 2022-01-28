@@ -17,8 +17,8 @@ let
     name = "debian-10.9-buster-amd64";
     fullName = "Debian 10.9 Buster (amd64)";
     packagesList = fetchurl {
-      url = "https://snapshot.debian.org/archive/debian/20210817T090654Z/dists/buster/main/binary-amd64/Packages.xz";
-      sha256 = "sha256-NTDLxseLbK3agMENlJ9RGr1KfzPTSS7RfTan7MWRpf0=";
+      url = "https://snapshot.debian.org/archive/debian/20220101T024315Z/dists/buster/main/binary-amd64/Packages.xz";
+      sha256 = "sha256-Yh1QU8wS6vxojixvGs6eQhrYSMVxp21r81KBg+7BhvE=";
     };
     urlPrefix = "mirror://debian";
     packages = [
