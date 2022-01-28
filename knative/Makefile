@@ -46,8 +46,7 @@ loadbalancer: ## deploy load balancer
 	$(KUBECTL) get secret -n metallb-system memberlist || \
 		$(KUBECTL) create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 	$(KUBECTL) apply -f $(VHIVE_CONFIG)/calico/canal.yaml
-	$(CONFIG_ACCESSOR) $(VHIVE_CONFIG)/istio/istio-minimal-operator.yaml | \
-		$(ISTIOCTL) install -y -f-
+	$(ISTIOCTL) install -y -f- < istio-minimal-operator.yaml
 
 knative: loadbalancer ## deploy knative
     # always fails the first time ?
