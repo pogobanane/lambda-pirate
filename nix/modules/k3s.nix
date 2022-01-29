@@ -1,7 +1,7 @@
 { pkgs, lib, config, ... }:
 let
   #pinned-cni-plugins = pkgs.callPackage ../pkgs/cni-plugins.nix { };
-  #pinned-containerd = pkgs.callPackage ../pkgs/containerd.nix { };
+  pinned-containerd = pkgs.callPackage ../pkgs/containerd.nix { };
 in
 {
   options = {
@@ -16,11 +16,11 @@ in
 
   config = {
     nixpkgs.overlays = [
-      #(self: super: {
-      #  # theres an required plugin missing in 1.0.0 so we pin it to 0.9.1
+      (self: super: {
+        # theres an required plugin missing in 1.0.0 so we pin it to 0.9.1
       #  cni-plugins = pinned-cni-plugins;
-      #  containerd = pinned-containerd;
-      #})
+        containerd = pinned-containerd;
+      })
     ];
 
     environment.systemPackages = [
