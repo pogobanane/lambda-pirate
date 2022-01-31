@@ -9,7 +9,7 @@ BUSYBOX = "./vmsh/busybox.rw.ext4"
 BUSYBOX_CMD = ["/bin/sh"]
 
 def await_error() -> int:
-    cmd = subprocess.Popen(["journalctl", "-f", "--no-pager", "-o", "cat", "-u", "vhive"], stdout=subprocess.PIPE)
+    cmd = subprocess.Popen(["journalctl", "-f", "--no-pager", "-o", "cat", "-n", "0", "-u", "vhive"], stdout=subprocess.PIPE)
     while True:
         line = cmd.stdout.readline().decode()
         line = logfmt.parse_line(line)
@@ -44,6 +44,7 @@ def attach_vmsh(vmID: int) -> None:
 
 def main() -> None:
     print("lambda-pirate deamon for vhive")
+    print("Waiting for errors in vhive workloads. ")
     vmID = await_error()
     print(f"attaching vmsh to VM {vmID}")
     attach_vmsh(vmID)
