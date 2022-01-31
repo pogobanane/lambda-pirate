@@ -1,7 +1,7 @@
 vhive_dir := `echo "$(dirname $(which deployer))/../share/vhive-examples"`
 vhive_bin := ""
 #vhive_dir := invocation_directory() + "/../vhive"
-#vhive_bin := "~/go/bin/"
+#vhive_bin := `echo ~/go/bin/`
 
 # print this help
 help: 
@@ -51,7 +51,11 @@ make-deploy:
     CONFIG_ACCESSOR=cat VHIVE_CONFIG={{vhive_dir}}/configs sudo -E make -C knative deploy -j$(nproc)
 
 vhive-deployer:
-    sudo -E {{vhive_bin}}deployer -jsonFile knative/functions.json -funcPath {{vhive_dir}}/configs/knative_workloads --endpointsFile /tmp/endpoints.json
+    # we just accept that it won't deploy completely and kill after some time
+    sudo -E {{vhive_bin}}deployer -jsonFile knative/functions.json -funcPath {{vhive_dir}}/configs/knative_workloads --endpointsFile /tmp/endpoints.json &
+    sleep 30
+    sudo kill $(ps aux | awk '{print $2"\t"$11}' | grep $(echo {{vhive_bin}}deployer) | awk '{print $1}')
+    wait
 
 vhive-deploy-local:
     sudo -E kn service apply helloworldlocal -f {{vhive_dir}}/configs/knative_workloads/helloworld_local.yaml
