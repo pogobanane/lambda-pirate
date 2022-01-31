@@ -112,23 +112,13 @@ in
       ];
       preStart = ''
         set -eux -o pipefail
-        mkdir -p ${devmapperDir}
-        if [[ ! -f ${devmapperDir}/data ]]; then
-          touch "${devmapperDir}/data"
-          truncate -s 100G "${devmapperDir}/data"
+        DATADEV="/dev/zvol/zroot/thinpool-data"
+        METADEV="/dev/zvol/zroot/thinpool-metadata"
+        if [[ ! -L $DATADEV ]]; then
+          ${pkgs.zfs}/bin/zfs create -V 100GB zroot/thinpool-data
         fi
-        if [[ ! -f ${devmapperDir}/metadata ]]; then
-          touch "${devmapperDir}/metadata"
-          truncate -s 2G "${devmapperDir}/metadata"
-        fi
-        DATADEV="$(losetup --output NAME --noheadings --associated ${devmapperDir}/data)"
-        if [[ -z "$DATADEV" ]]; then
-            DATADEV="$(losetup --find --show ${devmapperDir}/data)"
-        fi
-
-        METADEV="$(losetup --output NAME --noheadings --associated ${devmapperDir}/metadata)"
-        if [[ -z "$METADEV" ]]; then
-            METADEV="$(losetup --find --show ${devmapperDir}/metadata)"
+        if [[ ! -L $METADEV ]]; then
+          ${pkgs.zfs}/bin/zfs create -V 2GB zroot/thinpool-metadata
         fi
 
         SECTORSIZE=512

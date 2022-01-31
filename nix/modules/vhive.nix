@@ -31,7 +31,7 @@
     serviceConfig ={
       Environment = "KUBECONFIG=/etc/rancher/k3s/k3s.yaml";
       Restart = "on-failure";
-      ExecStart = "${pkgs.vhive}/bin/vhive -dbg -snapshots";
+      ExecStart = "${pkgs.vhive}/bin/vhive -dbg";
       #ExecStart = "/home/peter/go/bin/vhive -dbg -snapshots";
     };
   };
