@@ -100,27 +100,14 @@ knative-serving    controller-74f8f6ccb8-b5q7k                       1/1     Run
 knative-serving    activator-6d7f96d7fc-6jlk8                        1/1     Running     0          3m12s
 knative-serving    default-domain-t75n7                              0/1     Completed   0          81s
 kube-system        canal-59rld                                       1/2     Running     0          5m44s
-default            pyaes-0-00001-deployment-66fc4796fd-gkbrf         2/2     Running     0          65s
-default            rnn-serving-1-00001-deployment-598867c4bd-g8tjn   2/2     Running     0          65s
-default            helloworld-0-00001-deployment-b678df958-h4wv4     2/2     Running     0          65s
-default            pyaes-1-00001-deployment-7576bfc48f-b94pw         2/2     Running     0          65s
-default            rnn-serving-0-00001-deployment-5d6cc56885-8g2jd   2/2     Running     0          65s
-default            rnn-serving-2-00001-deployment-7757fc4454-l2p5p   2/2     Running     0          20s
 default            hellooopsie-0-00001-deployment-94c4d9c74-2q4zf    2/2     Running     0          19s
 ```
 
-### 3. Invoke lambda-functions
+### 3. Pirate your lambda
 
-```console
-$ just vhive-invoker-slow # test invocations according to /tmp/endpoints.json
-```
-
-### 4. Pirate your lambda
-
-The vhive deployer should have started a hellooopsie pod which produces an
-error on every 10th call. Start lambda-pirate (`just lambda-pirate`) and call
-the endpoint a few times (`just vhive-invoker-slow`) until the error is caught 
-by lambda-pirate and vmsh is attached to the micro VM.
+The vhive deployer has now started a hellooopsie lambda which produces an error
+every 15 seconds. Start lambda-pirate (`just lambda-pirate`) and wait until an
+error is detected and vmsh is attached to the micro VM.
 
 
 ## Development
