@@ -12,6 +12,7 @@ killvms:
     sudo pkill -SIGTERM firecracker
 
 lambda-pirate:
+  sudo modprobe kheaders
   nix build github:Mic92/vmsh#vmsh -o vmsh/vmsh
   nix build github:Mic92/vmsh#busybox-image -o vmsh/busybox.ext4
   [[ -f vmsh/busybox.rw.ext4 ]] || cp vmsh/busybox.ext4 vmsh/busybox.rw.ext4
