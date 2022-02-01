@@ -36,7 +36,7 @@ in
       pkgs.iptables
     ];
 
-    services.k3s.enable = true;
+    services.k3s.enable = false;
     services.k3s.docker = false;
     services.dockerRegistry.enable = true;
     services.dockerRegistry.listenAddress = "0.0.0.0";
