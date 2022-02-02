@@ -53,6 +53,10 @@ To do so include the following configuration in your flake.nix
           ./configuration.nix # or whatever configuration you use...
           lambda-pirate.nixosModules.knative
           lambda-pirate.nixosModules.vhive
+          ({ config, ... }: {
+            # for lambda pirate
+            services.vhive.dockerRegistryIp = 1.1.1.1; # the ipv4 of this machine
+          })
         ];
       };
     };
@@ -63,6 +67,12 @@ Checkout the nixos modules in [nix/modules](./nix/modules) for further details. 
 
 ``` console
 $ nixos-rebuild switch
+```
+
+Enter the development shell to load and make available all command line dependencies and variables:
+
+```console 
+$ nix develop
 ```
 
 ###  2. Deploy knative
