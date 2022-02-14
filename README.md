@@ -49,7 +49,7 @@ $ nix develop
 
 ### 3. NixOS setup
 
-If you are working on evaluation machines provided by, please skip this step as it is already completed.
+If you are working on evaluation machines provided by us, please skip this step as it is already completed.
 
 In NixOS one can include the nixos modules in their configuration to deploy a
 single-node [k3s](https://k3s.io),
