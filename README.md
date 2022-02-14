@@ -17,7 +17,14 @@ Status: experimental
 
 ## Getting Started
 
-### 1. NixOS Flake Setup
+### 1. Clone lambda-pirate
+
+```console
+git clone git@github.com:pogobanane/lambda-pirate.git
+cd lambda-pirate
+```
+
+### 2. Nix Flake Setup
 
 We use [nix](https://nixos.org/download.html) with [nix flakes](https://nixos.wiki/wiki/Flakes) to build
 modules.
@@ -33,6 +40,16 @@ Packages can be built into `result/` with `nix build .#$pkgname` i.e.:
 ``` console
 $ nix build .#vhive
 ```
+
+Enter the development shell to load and make available all command line dependencies and variables:
+
+```console 
+$ nix develop
+```
+
+### 3. NixOS setup
+
+If you are working on evaluation machines provided by, please skip this step as it is already completed.
 
 In NixOS one can include the nixos modules in their configuration to deploy a
 single-node [k3s](https://k3s.io),
@@ -69,13 +86,7 @@ Checkout the nixos modules in [nix/modules](./nix/modules) for further details. 
 $ nixos-rebuild switch
 ```
 
-Enter the development shell to load and make available all command line dependencies and variables:
-
-```console 
-$ nix develop
-```
-
-###  2. Deploy knative
+###  4. Deploy knative
 
 After adding the nixos modules, the kubernetes manifests have to be deployed:
 
@@ -113,7 +124,7 @@ kube-system        canal-59rld                                       1/2     Run
 default            hellooopsie-0-00001-deployment-94c4d9c74-2q4zf    2/2     Running     0          19s
 ```
 
-### 3. Pirate your lambda
+### 5. Pirate your lambda
 
 The vhive deployer has now started a hellooopsie lambda which produces an error
 every 15 seconds. Start lambda-pirate (`just lambda-pirate`) and wait until an
