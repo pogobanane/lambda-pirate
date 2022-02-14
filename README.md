@@ -15,12 +15,14 @@ Supported OS: NixOS
 
 Status: experimental
 
+**To reproduce the usecase as presented in the VMSH paper, follow this [guide](EVALUATION.md)**
+
 ## Getting Started
 
 ### 1. Clone lambda-pirate
 
 ```console
-$ git clone git@github.com:pogobanane/lambda-pirate.git
+$ git clone https://github.com/pogobanane/lambda-pirate.git
 $ cd lambda-pirate
 ```
 
