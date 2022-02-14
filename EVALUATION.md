@@ -1,6 +1,6 @@
 # Evaluation guide
 
-On our evaluation machine we already set up kubernetes with [vhive](https://github.com/ease-lab/vhive) on our NixOS machine as described in the [README](README.md).
+This guide assumes that your evaluation machine has already set up kubernetes with [vhive](https://github.com/ease-lab/vhive) on a NixOS machine as described in the [README](README.md).
 
 Lambda-pirate can be downloaded like that:
 
