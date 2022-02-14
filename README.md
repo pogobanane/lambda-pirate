@@ -20,8 +20,8 @@ Status: experimental
 ### 1. Clone lambda-pirate
 
 ```console
-git clone git@github.com:pogobanane/lambda-pirate.git
-cd lambda-pirate
+$ git clone git@github.com:pogobanane/lambda-pirate.git
+$ cd lambda-pirate
 ```
 
 ### 2. Nix Flake Setup
